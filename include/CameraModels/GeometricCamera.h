@@ -32,12 +32,14 @@
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/assume_abstract.hpp>
 
+
+#include "Converter.h"
+#include "GeometricTools.h"
+
 #include <sophus/se3.hpp>
 
 #include <Eigen/Geometry>
 
-#include "Converter.h"
-#include "GeometricTools.h"
 
 namespace ORB_SLAM3 {
     class GeometricCamera {

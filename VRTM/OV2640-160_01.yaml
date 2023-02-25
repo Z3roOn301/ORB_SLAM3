@@ -33,34 +33,44 @@ Camera1.p2: 0.00024726512895116673
 Camera.height: 600
 Camera.width: 800
 
-Camera.newHeight: 550
-Camera.newWidth: 750
+Camera.newHeight: 600
+Camera.newWidth: 800
 
 # Camera frames per second 
-Camera.fps: 3
+Camera.fps: 1
 
 # Color order of the images (0: BGR, 1: RGB. It is ignored if images are grayscale)
-Camera.RGB: 1
+Camera.RGB: 0
 
 #--------------------------------------------------------------------------------------------
 # ORB Parameters
 #--------------------------------------------------------------------------------------------
 
 # ORB Extractor: Number of features per image
-ORBextractor.nFeatures: 10000
+ORBextractor.nFeatures: 1000 #1000
 
 # ORB Extractor: Scale factor between levels in the scale pyramid 	
-ORBextractor.scaleFactor: 1.2
+ORBextractor.scaleFactor: 1.2 #1.2
 
 # ORB Extractor: Number of levels in the scale pyramid	
-ORBextractor.nLevels: 8
+ORBextractor.nLevels: 8 #8
+
+# ORB GlobalBundleAdjustment: Number of Iterations 
+GlobalBundleAdjustment.Iterations: 10 #10
+
+# ORB ReconstructH: Number of minParallax 
+ReconstructH.minParallax: 1.0 #1.0
+
+# ORB EraseObservation: Number of minObservations 
+EraseObservation.minObservations: #8
+
 
 # ORB Extractor: Fast threshold
 # Image is divided in a grid. At each cell FAST are extracted imposing a minimum response.
 # Firstly we impose iniThFAST. If no corners are detected we impose a lower value minThFAST
 # You can lower these values if your images have low contrast			
-ORBextractor.iniThFAST: 20
-ORBextractor.minThFAST: 7
+ORBextractor.iniThFAST: 20 #20
+ORBextractor.minThFAST: 7 #7
 
 #--------------------------------------------------------------------------------------------
 # Viewer Parameters
@@ -74,5 +84,5 @@ Viewer.CameraLineWidth: 3.0
 Viewer.ViewpointX: 0.0
 Viewer.ViewpointY: -0.7
 Viewer.ViewpointZ: -1.8
-Viewer.ViewpointF: 500.0
+Viewer.ViewpointF: 200.0
 

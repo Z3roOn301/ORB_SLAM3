@@ -29,13 +29,14 @@
 using namespace std;
 namespace ORB_SLAM3
 {
-    TwoViewReconstruction::TwoViewReconstruction(const Eigen::Matrix3f& k, float sigma, int iterations)
+    TwoViewReconstruction::TwoViewReconstruction(const Eigen::Matrix3f& k, const string &strSettingPath, Settings* settings, float sigma, int iterations)
     {
         mK = k;
 
         mSigma = sigma;
         mSigma2 = sigma*sigma;
         mMaxIterations = iterations;
+        if(settings){minParallax=settings->minParallax();}
     }
 
     bool TwoViewReconstruction::Reconstruct(const std::vector<cv::KeyPoint>& vKeys1, const std::vector<cv::KeyPoint>& vKeys2, const vector<int> &vMatches12,
@@ -113,7 +114,7 @@ namespace ORB_SLAM3
         if(SH+SF == 0.f) return false;
         float RH = SH/(SH+SF);
 
-        float minParallax = 1.0;
+        //float minParallax = settings->minParallax();
 
         // Try to reconstruct from homography or fundamental depending on the ratio (0.40-0.45)
         if(RH>0.50) // if(RH>0.40)

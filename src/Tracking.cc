@@ -51,6 +51,7 @@ Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer,
     // Load camera parameters from settings file
     if(settings){
         newParameterLoader(settings);
+        settings_ = settings;
     }
     else{
         cv::FileStorage fSettings(strSettingPath, cv::FileStorage::READ);
@@ -2501,7 +2502,7 @@ void Tracking::MonocularInitialization()
         Sophus::SE3f Tcw;
         vector<bool> vbTriangulated; // Triangulated Correspondences (mvIniMatches)
 
-        if(mpCamera->ReconstructWithTwoViews(mInitialFrame.mvKeysUn,mCurrentFrame.mvKeysUn,mvIniMatches,Tcw,mvIniP3D,vbTriangulated))
+        if(mpCamera->ReconstructWithTwoViews(mInitialFrame.mvKeysUn,mCurrentFrame.mvKeysUn,mvIniMatches,Tcw,mvIniP3D,vbTriangulated,settings_))
         {
             for(size_t i=0, iend=mvIniMatches.size(); i<iend;i++)
             {
