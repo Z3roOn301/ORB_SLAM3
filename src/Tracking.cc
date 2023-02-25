@@ -3654,7 +3654,8 @@ bool Tracking::Relocalization()
             else
             {
                 MLPnPsolver* pSolver = new MLPnPsolver(mCurrentFrame,vvpMapPointMatches[i]);
-                pSolver->SetRansacParameters(0.99,10,300,6,0.5,5.991);  //This solver needs at least 6 points
+                pSolver->SetRansacParameters(0.99,10,300,6,0.5,5.991);  //This solver needs at least 6 points 
+                //double probability = 0.99, int minInliers = 10, int maxIterations = 300, int minSet = 6, float epsilon = 0.5, float th2 = 5.991);
                 vpMLPnPsolvers[i] = pSolver;
                 nCandidates++;
             }
