@@ -117,7 +117,21 @@ void LoopClosing::Run()
             double timePRTotal = std::chrono::duration_cast<std::chrono::duration<double,std::milli> >(time_EndPR - time_StartPR).count();
             vdPRTotal_ms.push_back(timePRTotal);
 #endif
+            
+            Map* pMap = mpCurrentKF->GetMap();
+            if((pMap->GetAllKeyFrames().size()%20)==0){
+                    // Launch a new thread to perform Global Bundle Adjustment (Only if few keyframes, if not it would take too much time)
+                if(!pMap->isImuInitialized() || (pMap->KeyFramesInMap()<500 && mpAtlas->CountMaps()==1))
+                {
+                    mbRunningGBA = true;
+                    mbFinishedGBA = false;
+                    mbStopGBA = false;
+                    mnCorrectionGBA = mnNumCorrection;
 
+                    mpThreadGBA = new thread(&LoopClosing::RunGlobalBundleAdjustment, this, pMap, mpCurrentKF->mnId);
+                }
+            };
+            
             if(bFindedRegion)
             {
                 if(mbMergeDetected)
