@@ -52,7 +52,7 @@ public:
 
 public:
 
-    LoopClosing(Atlas* pAtlas, KeyFrameDatabase* pDB, ORBVocabulary* pVoc,const bool bFixScale, const bool bActiveLC);
+    LoopClosing(Atlas* pAtlas, KeyFrameDatabase* pDB, ORBVocabulary* pVoc,const bool bFixScale, const bool bActiveLC, Settings* settings);
 
     void SetTracker(Tracking* pTracker);
 
@@ -120,6 +120,7 @@ protected:
 
     bool CheckNewKeyFrames();
 
+    int nIterations;
 
     //Methods to implement the new place recognition algorithm
     bool NewDetectCommonRegions();

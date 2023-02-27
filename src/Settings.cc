@@ -448,6 +448,7 @@ namespace ORB_SLAM3 {
         nLevels_ = readParameter<int>(fSettings,"ORBextractor.nLevels",found);
         initThFAST_ = readParameter<int>(fSettings,"ORBextractor.iniThFAST",found);
         minThFAST_ = readParameter<int>(fSettings,"ORBextractor.minThFAST",found);
+        nIterations_ = readParameter<int>(fSettings,"GlobalBundleAdjustment.Iterations",found);
     }
 
     void Settings::readViewer(cv::FileStorage &fSettings) {

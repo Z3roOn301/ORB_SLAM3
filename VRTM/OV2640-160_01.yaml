@@ -33,14 +33,14 @@ Camera1.p2: 0.00024726512895116673
 Camera.height: 600
 Camera.width: 800
 
-Camera.newHeight: 550
-Camera.newWidth: 750
+Camera.newHeight: 600
+Camera.newWidth: 800
 
 # Camera frames per second 
-Camera.fps: 3
+Camera.fps: 10
 
 # Color order of the images (0: BGR, 1: RGB. It is ignored if images are grayscale)
-Camera.RGB: 1
+Camera.RGB: 0
 
 #--------------------------------------------------------------------------------------------
 # ORB Parameters
@@ -55,6 +55,19 @@ ORBextractor.scaleFactor: 1.2
 # ORB Extractor: Number of levels in the scale pyramid	
 ORBextractor.nLevels: 8
 
+# ORB GlobalBundleAdjustment: Number of Iterations 
+GlobalBundleAdjustment.Iterations: 50 #10
+
+# ORB ReconstructH: Number of minParallax 
+# ReconstructH.minParallax: 1.0 #1.0
+
+# ORB EraseObservation: Number of minObservations 
+# EraseObservation.minObservations: #8
+
+#RANSAC?
+# Percentage
+
+
 # ORB Extractor: Fast threshold
 # Image is divided in a grid. At each cell FAST are extracted imposing a minimum response.
 # Firstly we impose iniThFAST. If no corners are detected we impose a lower value minThFAST
@@ -65,14 +78,14 @@ ORBextractor.minThFAST: 7
 #--------------------------------------------------------------------------------------------
 # Viewer Parameters
 #---------------------------------------------------------------------------------------------
-Viewer.KeyFrameSize: 0.05
+Viewer.KeyFrameSize: 0.005
 Viewer.KeyFrameLineWidth: 1.0
-Viewer.GraphLineWidth: 0.9
+Viewer.GraphLineWidth: 0.5
 Viewer.PointSize: 2.0
-Viewer.CameraSize: 0.08
-Viewer.CameraLineWidth: 3.0
+Viewer.CameraSize: 0.008
+Viewer.CameraLineWidth: 2.0
 Viewer.ViewpointX: 0.0
-Viewer.ViewpointY: -0.7
-Viewer.ViewpointZ: -1.8
-Viewer.ViewpointF: 500.0
+Viewer.ViewpointY: 2.0  #-0.7
+Viewer.ViewpointZ: 0.1  #-1.8
+Viewer.ViewpointF: 30000.0
 
