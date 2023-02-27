@@ -194,6 +194,8 @@ public:
 
 protected:
 
+    float fMLPnPSolverProbability;
+
     // Main tracking function. It is independent of the input sensor.
     void Track();
 

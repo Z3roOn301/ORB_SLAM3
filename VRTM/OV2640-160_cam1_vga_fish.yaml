@@ -7,34 +7,34 @@
 # When the variables are commented, the system doesn't load a previous session or not store the current one
 
 # If the LoadFile doesn't exist, the system give a message and create a new Atlas from scratch
-# System.LoadAtlasFromFile: "Session_MH01_MH02_MH03_Mono2"
+System.LoadAtlasFromFile: "Session_MH01_MH02_MH03_Mono3"
 
 # The store file is created from the current session, if a file with the same name exists it is deleted
-System.SaveAtlasToFile: "Session_MH01_MH02_MH03_Mono3"
+#System.SaveAtlasToFile: "Session_MH01_MH02_MH03_Mono4"
 
 #--------------------------------------------------------------------------------------------
 # Camera Parameters. Adjust them!
 #--------------------------------------------------------------------------------------------
 File.version: "1.0"
 
-Camera.type: "PinHole"
+Camera.type: "KannalaBrandt8"
 
 # Camera calibration and distortion parameters (OpenCV) 
-Camera1.fx: 267.33555550045685
-Camera1.fy: 266.82596518486486
-Camera1.cx: 406.6831883759925
-Camera1.cy: 327.0181481071027
+Camera1.fx: 203.6168
+Camera1.fy: 202.9709
+Camera1.cx: 324.5323
+Camera1.cy: 259.8806
 
-Camera1.k1: 0.1836909634990122
-Camera1.k2: -0.16674577986594408
-Camera1.p1: 0.0013359842508643457
-Camera1.p2: 0.00024726512895116673
+Camera1.k1: 0.62729
+Camera1.k2: 0.12562
+Camera1.k3: -0.38332
+Camera1.k4: 0.15859
 
-Camera.height: 600
-Camera.width: 800
+Camera.height: 480
+Camera.width: 640
 
-Camera.newHeight: 540
-Camera.newWidth: 720
+Camera.newHeight: 480
+Camera.newWidth: 640
 
 # Camera frames per second 
 Camera.fps: 10
@@ -47,7 +47,7 @@ Camera.RGB: 0
 #--------------------------------------------------------------------------------------------
 
 # ORB Extractor: Number of features per image
-ORBextractor.nFeatures: 1000
+ORBextractor.nFeatures: 5000
 
 # ORB Extractor: Scale factor between levels in the scale pyramid 	
 ORBextractor.scaleFactor: 1.2
@@ -64,7 +64,7 @@ Tracking.fMLPnPSolverProbability: 0.999 #0.99
 
 
 # ORB ReconstructH: Number of minParallax 
-# ReconstructH.minParallax: 1.0 #1.0
+#ReconstructH.minParallax: 1.0 #1.0
 
 # ORB EraseObservation: Number of minObservations 
 # EraseObservation.minObservations: #8
@@ -77,8 +77,8 @@ Tracking.fMLPnPSolverProbability: 0.999 #0.99
 # Image is divided in a grid. At each cell FAST are extracted imposing a minimum response.
 # Firstly we impose iniThFAST. If no corners are detected we impose a lower value minThFAST
 # You can lower these values if your images have low contrast			
-ORBextractor.iniThFAST: 10 #20
-ORBextractor.minThFAST: 4 #7
+ORBextractor.iniThFAST: 20 #20
+ORBextractor.minThFAST: 7 #7
 
 #--------------------------------------------------------------------------------------------
 # Viewer Parameters
@@ -91,6 +91,6 @@ Viewer.CameraSize: 0.08
 Viewer.CameraLineWidth: 2.0
 Viewer.ViewpointX: 0.0
 Viewer.ViewpointY: -2.0  #-0.7
-Viewer.ViewpointZ: 0.01  #-1.8
-Viewer.ViewpointF: 30000.0
+Viewer.ViewpointZ: 0.1  #-1.8
+Viewer.ViewpointF: 600.0
 

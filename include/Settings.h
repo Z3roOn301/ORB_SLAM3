@@ -100,6 +100,8 @@ namespace ORB_SLAM3 {
         float minThFAST() {return minThFAST_;}
         float scaleFactor() {return scaleFactor_;}
         int nIterations() {return nIterations_;}
+        float fSim3SolverProbability() {return fSim3SolverProbability_;}
+        float fMLPnPSolverProbability() {return fMLPnPSolverProbability_;}
 
         float keyFrameSize() {return keyFrameSize_;}
         float keyFrameLineWidth() {return keyFrameLineWidth_;}
@@ -207,6 +209,8 @@ namespace ORB_SLAM3 {
         int nLevels_;
         int initThFAST_, minThFAST_;
         int nIterations_;
+        float fSim3SolverProbability_;
+        float fMLPnPSolverProbability_;
 
         /*
          * Viewer stuff

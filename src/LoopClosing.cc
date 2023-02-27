@@ -41,6 +41,7 @@ LoopClosing::LoopClosing(Atlas *pAtlas, KeyFrameDatabase *pDB, ORBVocabulary *pV
     mnCovisibilityConsistencyTh = 3;
     mpLastCurrentKF = static_cast<KeyFrame*>(NULL);
     if(settings){nIterations = settings->nIterations();}
+    if(settings){fSim3SolverProbability = settings->fSim3SolverProbability();}
 
 #ifdef REGISTER_TIMES
 
@@ -711,7 +712,7 @@ bool LoopClosing::DetectCommonRegionsFromBoW(std::vector<KeyFrame*> &vpBowCand, 
                 bFixedScale=false;
 
             Sim3Solver solver = Sim3Solver(mpCurrentKF, pMostBoWMatchesKF, vpMatchedPoints, bFixedScale, vpKeyFrameMatchedMP);
-            solver.SetRansacParameters(0.99, nBoWInliers, 300); // at least 15 inliers
+            solver.SetRansacParameters(fSim3SolverProbability, nBoWInliers, 1000); // at least 15 inliers
 
             bool bNoMore = false;
             vector<bool> vbInliers;

@@ -449,6 +449,8 @@ namespace ORB_SLAM3 {
         initThFAST_ = readParameter<int>(fSettings,"ORBextractor.iniThFAST",found);
         minThFAST_ = readParameter<int>(fSettings,"ORBextractor.minThFAST",found);
         nIterations_ = readParameter<int>(fSettings,"GlobalBundleAdjustment.Iterations",found);
+        fSim3SolverProbability_ = readParameter<float>(fSettings,"LoopClosing.fSim3SolverProbability",found);
+        fMLPnPSolverProbability_ = readParameter<float>(fSettings,"Tracking.fMLPnPSolverProbability",found);
     }
 
     void Settings::readViewer(cv::FileStorage &fSettings) {

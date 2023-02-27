@@ -121,6 +121,7 @@ protected:
     bool CheckNewKeyFrames();
 
     int nIterations;
+    float fSim3SolverProbability;
 
     //Methods to implement the new place recognition algorithm
     bool NewDetectCommonRegions();
