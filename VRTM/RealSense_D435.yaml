@@ -7,45 +7,42 @@
 # When the variables are commented, the system doesn't load a previous session or not store the current one
 
 # If the LoadFile doesn't exist, the system give a message and create a new Atlas from scratch
-# System.LoadAtlasFromFile: "Session_MH01_MH02_MH03_Mono3"
+System.LoadAtlasFromFile: "Session_Stereo_01"
 
 # The store file is created from the current session, if a file with the same name exists it is deleted
-#System.SaveAtlasToFile: "Session_MH01_MH02_MH03_Mono4"
+System.SaveAtlasToFile: "Session_Stereo_02"
 
 #--------------------------------------------------------------------------------------------
 # Camera Parameters. Adjust them!
 #--------------------------------------------------------------------------------------------
 File.version: "1.0"
 
-Camera.type: "KannalaBrandt8"
+Camera.type: "Rectified"
 
-# Camera calibration and distortion parameters (OpenCV) 
-Camera1.fx: 203.6168
-Camera1.fy: 202.9709
-Camera1.cx: 324.5323
-Camera1.cy: 259.8806
+# Rectified Camera calibration and distortion parameters (OpenCV)
+Camera1.fx: 382.613
+Camera1.fy: 382.613
+Camera1.cx: 320.183
+Camera1.cy: 236.455
 
-Camera1.k1: 0.62729
-Camera1.k2: 0.12562
-Camera1.k3: -0.38332
-Camera1.k4: 0.15859
+Stereo.b: 0.0499585
 
-Camera.height: 480
+# Camera resolution
 Camera.width: 640
-
-Camera.newHeight: 480
-Camera.newWidth: 640
+Camera.height: 480
 
 # Camera frames per second 
-Camera.fps: 10
+Camera.fps: 30
 
 # Color order of the images (0: BGR, 1: RGB. It is ignored if images are grayscale)
-Camera.RGB: 0
+Camera.RGB: 1
+
+# Close/Far threshold. Baseline times.
+Stereo.ThDepth: 40.0
 
 #--------------------------------------------------------------------------------------------
 # ORB Parameters
 #--------------------------------------------------------------------------------------------
-
 # ORB Extractor: Number of features per image
 ORBextractor.nFeatures: 2000
 
@@ -53,7 +50,7 @@ ORBextractor.nFeatures: 2000
 ORBextractor.scaleFactor: 1.2
 
 # ORB Extractor: Number of levels in the scale pyramid	
-ORBextractor.nLevels: 8 #8
+ORBextractor.nLevels: 8
 
 # ORB GlobalBundleAdjustment: Number of Iterations 
 GlobalBundleAdjustment.Iterations: 30 #10
@@ -69,20 +66,16 @@ Tracking.fMLPnPSolverProbability: 0.999 #0.99
 # ORB EraseObservation: Number of minObservations 
 # EraseObservation.minObservations: #8
 
-#RANSAC?
-# Percentage
-
-
 # ORB Extractor: Fast threshold
 # Image is divided in a grid. At each cell FAST are extracted imposing a minimum response.
 # Firstly we impose iniThFAST. If no corners are detected we impose a lower value minThFAST
 # You can lower these values if your images have low contrast			
-ORBextractor.iniThFAST: 20 #20
-ORBextractor.minThFAST: 7 #7
+ORBextractor.iniThFAST: 20
+ORBextractor.minThFAST: 7
 
 #--------------------------------------------------------------------------------------------
 # Viewer Parameters
-#---------------------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------------
 Viewer.KeyFrameSize: 0.02
 Viewer.KeyFrameLineWidth: 1.0
 Viewer.GraphLineWidth: 0.2
@@ -92,5 +85,4 @@ Viewer.CameraLineWidth: 2.0
 Viewer.ViewpointX: 0.0
 Viewer.ViewpointY: -2.0  #-0.7
 Viewer.ViewpointZ: 0.1  #-1.8
-Viewer.ViewpointF: 600.0
-
+Viewer.ViewpointF: 400.0

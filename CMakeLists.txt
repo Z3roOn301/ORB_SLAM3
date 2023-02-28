@@ -193,6 +193,10 @@ add_executable(mono_VRTM
         VRTM/mono_VRTM.cc)
 target_link_libraries(mono_VRTM ${PROJECT_NAME})
 
+add_executable(stereo_VRTM
+        VRTM/stereo_VRTM.cc)
+target_link_libraries(stereo_VRTM ${PROJECT_NAME})
+
 #Monocular examples
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/Monocular)
 
