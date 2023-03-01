@@ -41,6 +41,9 @@ Stereo.T_c1_c2: !!opencv-matrix
             -0.000656143613644,  -0.046896036240590,   0.998899560146304,   0.001015350132563,
           0.0,0.0,0.0,1.0]
 
+
+
+
 # Lapping area between images
 Camera1.overlappingBegin: 0
 Camera1.overlappingEnd: 511
