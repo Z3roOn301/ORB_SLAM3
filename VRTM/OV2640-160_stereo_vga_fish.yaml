@@ -7,64 +7,95 @@
 # When the variables are commented, the system doesn't load a previous session or not store the current one
 
 # If the LoadFile doesn't exist, the system give a message and create a new Atlas from scratch
-System.LoadAtlasFromFile: "Session_Stereo_01"
+#System.LoadAtlasFromFile: "Session_MH01_MH02_MH03_Stereo60_Pseudo"
 
 # The store file is created from the current session, if a file with the same name exists it is deleted
-System.SaveAtlasToFile: "Session_Stereo_02"
+#System.SaveAtlasToFile: "Session_MH01_MH02_MH03_Stereo60_Pseudo"
 
 #--------------------------------------------------------------------------------------------
 # Camera Parameters. Adjust them!
 #--------------------------------------------------------------------------------------------
 File.version: "1.0"
 
-Camera.type: "Rectified"
+Camera.type: "KannalaBrandt8"
 
-# Rectified Camera calibration and distortion parameters (OpenCV)
-Camera1.fx: 382.613
-Camera1.fy: 382.613
-Camera1.cx: 320.183
-Camera1.cy: 236.455
+# Camera calibration and distortion parameters (CAM0) 
+Camera1.fx: 207.04126670503936                                    
+Camera1.fy: 206.21638959093718
+Camera1.cx: 326.49089687912647
+Camera1.cy: 261.23692561359985
 
-Stereo.b: 0.0499585
+Camera1.k1: 0.63846656
+Camera1.k2: 0.07571003
+Camera1.k3: -0.33798906
+Camera1.k4: 0.14549509
 
-# Camera resolution
-Camera.width: 640
+# Camera calibration and distortion parameters (CAM1) 
+Camera2.fx: 197.63975403909012
+Camera2.fy: 197.19349468808446
+Camera2.cx: 315.66933421528637
+Camera2.cy: 251.20613044900932
+
+Camera2.k1: 0.6313694205764061
+Camera2.k2: 0.14322119547640505
+Camera2.k3: -0.3661044140816122
+Camera2.k4: 0.1462985506318342
+
 Camera.height: 480
+Camera.width: 640
 
 # Camera frames per second 
-Camera.fps: 30
+Camera.fps: 5
 
 # Color order of the images (0: BGR, 1: RGB. It is ignored if images are grayscale)
-Camera.RGB: 1
+Camera.RGB: 0
 
-# Close/Far threshold. Baseline times.
-Stereo.ThDepth: 40.0
+# Close/Far threshold. Baseline times. 40? 60? 80?
+Stereo.ThDepth: 60.0
+
+# Transformation matrix from right camera to left camera
+Stereo.T_c1_c2: !!opencv-matrix
+  rows: 4
+  cols: 4
+  dt: f
+  data: [1.0, 0.0, 0.0, 0.15,
+         0.0, 1.0, 0.0, 0.0,
+         0.0, 0.0, 1.0, 0.0,
+         0.0, 0.0, 0.0, 1.0]
+
+  # data: [0.99703727,  0.01983865,  0.07431767, -166.12832334e-3,
+  #       -0.02073187,  0.99972159,  0.01126666, 2.28310834e-3,
+  #       -0.07407346, -0.01277403,  0.99717097, 244.10286163e-3,
+  #       0,0,0,1]
+
+#
+#If you are using stereo fish-eye cameras (KannalaBrandt8), you also need to specify the overlapping area between both images:
+# Lapping area between images
+Camera1.overlappingBegin: 0
+Camera1.overlappingEnd: 639
+
+Camera2.overlappingBegin: 0
+Camera2.overlappingEnd: 639
+
+# ORB GlobalBundleAdjustment: Number of Iterations 
+GlobalBundleAdjustment.Iterations: 10 #10
+
+# Ransac Probability
+LoopClosing.fSim3SolverProbability: 0.999 #0.99
+Tracking.fMLPnPSolverProbability: 0.999 #0.99
 
 #--------------------------------------------------------------------------------------------
 # ORB Parameters
 #--------------------------------------------------------------------------------------------
+
 # ORB Extractor: Number of features per image
-ORBextractor.nFeatures: 2000
+ORBextractor.nFeatures: 1500
 
 # ORB Extractor: Scale factor between levels in the scale pyramid 	
 ORBextractor.scaleFactor: 1.2
 
 # ORB Extractor: Number of levels in the scale pyramid	
 ORBextractor.nLevels: 8
-
-# ORB GlobalBundleAdjustment: Number of Iterations 
-GlobalBundleAdjustment.Iterations: 30 #10
-
-# Ransac Probability
-LoopClosing.fSim3SolverProbability: 0.999 #0.99
-Tracking.fMLPnPSolverProbability: 0.999 #0.99
-
-
-# ORB ReconstructH: Number of minParallax 
-#ReconstructH.minParallax: 1.0 #1.0
-
-# ORB EraseObservation: Number of minObservations 
-# EraseObservation.minObservations: #8
 
 # ORB Extractor: Fast threshold
 # Image is divided in a grid. At each cell FAST are extracted imposing a minimum response.
@@ -85,4 +116,7 @@ Viewer.CameraLineWidth: 2.0
 Viewer.ViewpointX: 0.0
 Viewer.ViewpointY: -2.0  #-0.7
 Viewer.ViewpointZ: 0.1  #-1.8
-Viewer.ViewpointF: 600.0
+Viewer.ViewpointF: 200.0
+Viewer.imageViewScale: 1.0
+
+
