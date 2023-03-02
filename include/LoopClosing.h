@@ -122,6 +122,7 @@ protected:
 
     int nIterations;
     float fSim3SolverProbability;
+    int BAfrequency;
 
     //Methods to implement the new place recognition algorithm
     bool NewDetectCommonRegions();

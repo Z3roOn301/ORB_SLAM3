@@ -451,6 +451,9 @@ namespace ORB_SLAM3 {
         nIterations_ = readParameter<int>(fSettings,"GlobalBundleAdjustment.Iterations",found);
         fSim3SolverProbability_ = readParameter<float>(fSettings,"LoopClosing.fSim3SolverProbability",found);
         fMLPnPSolverProbability_ = readParameter<float>(fSettings,"Tracking.fMLPnPSolverProbability",found);
+        BAfrequency_ = readParameter<int>(fSettings,"LoopClosing.BAfrequency",found, false);
+        if(!found)
+            BAfrequency_ = 30;
     }
 
     void Settings::readViewer(cv::FileStorage &fSettings) {

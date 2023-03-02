@@ -42,6 +42,7 @@ LoopClosing::LoopClosing(Atlas *pAtlas, KeyFrameDatabase *pDB, ORBVocabulary *pV
     mpLastCurrentKF = static_cast<KeyFrame*>(NULL);
     if(settings){nIterations = settings->nIterations();}
     if(settings){fSim3SolverProbability = settings->fSim3SolverProbability();}
+    if(settings){BAfrequency = settings->BAfrequency();}
 
 #ifdef REGISTER_TIMES
 
@@ -120,7 +121,7 @@ void LoopClosing::Run()
 #endif
 
             Map* pMap = mpCurrentKF->GetMap();
-            if((pMap->GetAllKeyFrames().size()%20)==0 && !isRunningGBA()){
+            if((pMap->GetAllKeyFrames().size()%BAfrequency)==0 && !isRunningGBA()){
                     // Launch a new thread to perform Global Bundle Adjustment (Only if few keyframes, if not it would take too much time)
                 if(!pMap->isImuInitialized() || (pMap->KeyFramesInMap()<500 && mpAtlas->CountMaps()==1))
                 {

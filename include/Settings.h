@@ -102,6 +102,7 @@ namespace ORB_SLAM3 {
         int nIterations() {return nIterations_;}
         float fSim3SolverProbability() {return fSim3SolverProbability_;}
         float fMLPnPSolverProbability() {return fMLPnPSolverProbability_;}
+        int BAfrequency() {return BAfrequency_;}
 
         float keyFrameSize() {return keyFrameSize_;}
         float keyFrameLineWidth() {return keyFrameLineWidth_;}
@@ -211,6 +212,7 @@ namespace ORB_SLAM3 {
         int nIterations_;
         float fSim3SolverProbability_;
         float fMLPnPSolverProbability_;
+        int BAfrequency_;
 
         /*
          * Viewer stuff
