@@ -29,6 +29,8 @@
 #include <thread>
 #include <include/CameraModels/Pinhole.h>
 #include <include/CameraModels/KannalaBrandt8.h>
+#include <Pinhole.h>
+#include <KannalaBrandt8.h>
 
 namespace ORB_SLAM3
 {
@@ -292,6 +294,7 @@ Frame::Frame(const cv::Mat &imGray, const double &timeStamp, ORBextractor* extra
      mImuCalib(ImuCalib), mpImuPreintegrated(NULL),mpPrevFrame(pPrevF),mpImuPreintegratedFrame(NULL), mpReferenceKF(static_cast<KeyFrame*>(NULL)), mbIsSet(false), mbImuPreintegrated(false), mpCamera(pCamera),
      mpCamera2(nullptr), mbHasPose(false), mbHasVelocity(false)
 {
+
     // Frame ID
     mnId=nNextId++;
 
@@ -415,7 +418,7 @@ void Frame::AssignFeaturesToGrid()
     }
 }
 
-void Frame::ExtractORB(int flag, const cv::Mat &im, const int x0, const int x1)
+void Frame::ExtractORB(int flag, const cv::Mat &im, const int x0, const int x1) //Problem here?
 {
     vector<int> vLapping = {x0,x1};
     if(flag==0)
@@ -587,7 +590,6 @@ bool Frame::isInFrustum(MapPoint *pMP, float viewingCosLimit)
 
 bool Frame::ProjectPointDistort(MapPoint* pMP, cv::Point2f &kp, float &u, float &v)
 {
-
     // 3D in absolute coordinates
     Eigen::Vector3f P = pMP->GetWorldPos();
 
@@ -1056,8 +1058,11 @@ Frame::Frame(const cv::Mat &imLeft, const cv::Mat &imRight, const double &timeSt
 #ifdef REGISTER_TIMES
     std::chrono::steady_clock::time_point time_StartExtORB = std::chrono::steady_clock::now();
 #endif
-    thread threadLeft(&Frame::ExtractORB,this,0,imLeft,static_cast<KannalaBrandt8*>(mpCamera)->mvLappingArea[0],static_cast<KannalaBrandt8*>(mpCamera)->mvLappingArea[1]);
-    thread threadRight(&Frame::ExtractORB,this,1,imRight,static_cast<KannalaBrandt8*>(mpCamera2)->mvLappingArea[0],static_cast<KannalaBrandt8*>(mpCamera2)->mvLappingArea[1]);
+    // cout << "here is the actual kannalaBrand8 Problem!!!! (Frame.cc @ 1059)" << endl;
+    thread threadLeft(&Frame::ExtractORB,this,0,imLeft,25,639);
+    thread threadRight(&Frame::ExtractORB,this,1,imRight,0,614);
+    // thread threadLeft(&Frame::ExtractORB,this,0,imLeft,static_cast<KannalaBrandt8*>(mpCamera)->mvLappingArea[0],static_cast<KannalaBrandt8*>(mpCamera)->mvLappingArea[1]);
+    // thread threadRight(&Frame::ExtractORB,this,1,imRight,static_cast<KannalaBrandt8*>(mpCamera2)->mvLappingArea[0],static_cast<KannalaBrandt8*>(mpCamera2)->mvLappingArea[1]);    
     threadLeft.join();
     threadRight.join();
 #ifdef REGISTER_TIMES

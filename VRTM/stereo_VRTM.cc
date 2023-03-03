@@ -90,12 +90,10 @@ int main(int argc, char **argv)
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
     ORB_SLAM3::System SLAM(argv[1],argv[2],ORB_SLAM3::System::STEREO, true);
 
-    cout << endl << "YOU ARE HERE" << endl;
-
     cv::Mat imLeft, imRight;
+
     for (seq = 0; seq<num_seq; seq++)
     {
-
         // Seq loop
         double t_resize = 0;
         double t_rect = 0;
@@ -121,7 +119,6 @@ int main(int argc, char **argv)
                      << string(vstrImageRight[seq][ni]) << endl;
                 return 1;
             }
-
             double tframe = vTimestampsCam[seq][ni];
 
     #ifdef COMPILEDWITHC11
@@ -130,7 +127,6 @@ int main(int argc, char **argv)
             std::chrono::monotonic_clock::time_point t1 = std::chrono::monotonic_clock::now();
     #endif
 
-            // Pass the images to the SLAM system
             SLAM.TrackStereo(imLeft,imRight,tframe, vector<ORB_SLAM3::IMU::Point>(), vstrImageLeft[seq][ni]);
 
     #ifdef COMPILEDWITHC11
@@ -138,6 +134,7 @@ int main(int argc, char **argv)
     #else
             std::chrono::monotonic_clock::time_point t2 = std::chrono::monotonic_clock::now();
     #endif
+
 
 #ifdef REGISTER_TIMES
             t_track = t_resize + t_rect + std::chrono::duration_cast<std::chrono::duration<double,std::milli> >(t2 - t1).count();
@@ -167,6 +164,7 @@ int main(int argc, char **argv)
         }
 
     }
+
     // Stop all threads
     SLAM.Shutdown();
 

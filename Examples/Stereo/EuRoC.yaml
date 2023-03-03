@@ -10,7 +10,7 @@
 #System.LoadAtlasFromFile: "Session_MH01_MH02_MH03_Stereo60_Pseudo"
 
 # The store file is created from the current session, if a file with the same name exists it is deleted
-#System.SaveAtlasToFile: "Session_MH01_MH02_MH03_Stereo60_Pseudo"
+System.SaveAtlasToFile: "Session_euroc_test1"
 
 #--------------------------------------------------------------------------------------------
 # Camera Parameters. Adjust them!
@@ -44,7 +44,7 @@ Camera.width: 752
 Camera.height: 480
 
 # Camera frames per second 
-Camera.fps: 20
+Camera.fps: 50
 
 # Color order of the images (0: BGR, 1: RGB. It is ignored if images are grayscale)
 Camera.RGB: 1
@@ -60,25 +60,28 @@ Stereo.T_c1_c2: !!opencv-matrix
          0,0,0,1.000000000000000]
 
 
+# ORB GlobalBundleAdjustment: Execute BA every n frames 
+LoopClosing.BAfrequency: 10000 #30
+
 # ORB GlobalBundleAdjustment: Number of Iterations 
-GlobalBundleAdjustment.Iterations: 30 #10
+GlobalBundleAdjustment.Iterations: 3 #10
 
 # Ransac Probability
-LoopClosing.fSim3SolverProbability: 0.999 #0.99
-Tracking.fMLPnPSolverProbability: 0.999 #0.99
+LoopClosing.fSim3SolverProbability: 0.8 #0.99
+Tracking.fMLPnPSolverProbability: 0.8 #0.99
 
 #--------------------------------------------------------------------------------------------
 # ORB Parameters
 #--------------------------------------------------------------------------------------------
 
 # ORB Extractor: Number of features per image
-ORBextractor.nFeatures: 1200
+ORBextractor.nFeatures: 500
 
 # ORB Extractor: Scale factor between levels in the scale pyramid 	
 ORBextractor.scaleFactor: 1.2
 
 # ORB Extractor: Number of levels in the scale pyramid	
-ORBextractor.nLevels: 8
+ORBextractor.nLevels: 5
 
 # ORB Extractor: Fast threshold
 # Image is divided in a grid. At each cell FAST are extracted imposing a minimum response.

@@ -7,68 +7,91 @@
 # When the variables are commented, the system doesn't load a previous session or not store the current one
 
 # If the LoadFile doesn't exist, the system give a message and create a new Atlas from scratch
-System.LoadAtlasFromFile: "Session_stereo_eigenbau_Kannala_5_2"
+# System.LoadAtlasFromFile: "Session_stereo_eigenbau_pinholeloaded_Kannalasaved_5"
 
 # The store file is created from the current session, if a file with the same name exists it is deleted
-# System.SaveAtlasToFile: "Session_stereo_eigenbau_Kannala_5_2"
+# System.SaveAtlasToFile: "Session_stereo_eigenbau_pinholeloaded_Kannalasaved_5"
 
 #--------------------------------------------------------------------------------------------
 # Camera Parameters. Adjust them!
 #--------------------------------------------------------------------------------------------
 File.version: "1.0"
 
-Camera.type: "KannalaBrandt8"
+Camera.type: "PinHole"
+
+# Camera calibration and distortion parameters (OpenCV) 
+Camera1.fx: 458.654
+Camera1.fy: 457.296
+Camera1.cx: 367.215
+Camera1.cy: 248.375
+
+Camera1.k1: -0.28340811
+Camera1.k2: 0.07395907
+Camera1.p1: 0.00019359
+Camera1.p2: 1.76187114e-05
+
+Camera2.fx: 457.587
+Camera2.fy: 456.134
+Camera2.cx: 379.999
+Camera2.cy: 255.238
+
+Camera2.k1: -0.28368365
+Camera2.k2: 0.07451284
+Camera2.p1: -0.00010473
+Camera2.p2: -3.55590700e-05
+
+# Camera.type: "KannalaBrandt8"
 
 # Camera calibration and distortion parameters (CAM0) 
-Camera1.fx: 207.04126670503936                                    
-Camera1.fy: 206.21638959093718
-Camera1.cx: 326.49089687912647
-Camera1.cy: 261.23692561359985
+# Camera1.fx: 207.04126670503936                                    
+# Camera1.fy: 206.21638959093718
+# Camera1.cx: 326.49089687912647
+# Camera1.cy: 261.23692561359985
 
-Camera1.k1: 0.63846656
-Camera1.k2: 0.07571003
-Camera1.k3: -0.33798906
-Camera1.k4: 0.14549509
+# Camera1.k1: 0.63846656
+# Camera1.k2: 0.07571003
+# Camera1.k3: -0.33798906
+# Camera1.k4: 0.14549509
 
-# Camera calibration and distortion parameters (CAM1) 
-Camera2.fx: 197.63975403909012
-Camera2.fy: 197.19349468808446
-Camera2.cx: 315.66933421528637
-Camera2.cy: 251.20613044900932
+# # Camera calibration and distortion parameters (CAM1) 
+# Camera2.fx: 197.63975403909012
+# Camera2.fy: 197.19349468808446
+# Camera2.cx: 315.66933421528637
+# Camera2.cy: 251.20613044900932
 
-Camera2.k1: 0.6313694205764061
-Camera2.k2: 0.14322119547640505
-Camera2.k3: -0.3661044140816122
-Camera2.k4: 0.1462985506318342
+# Camera2.k1: 0.6313694205764061
+# Camera2.k2: 0.14322119547640505
+# Camera2.k3: -0.3661044140816122
+# Camera2.k4: 0.1462985506318342
 
 
 Camera.height: 480
 Camera.width: 640
 
 # Camera frames per second 
-Camera.fps: 5
+Camera.fps: 20
 
 # Color order of the images (0: BGR, 1: RGB. It is ignored if images are grayscale)
 Camera.RGB: 0
 
 # Close/Far threshold. Baseline times. 40? 60? 80?
-Stereo.ThDepth: 100.0
+Stereo.ThDepth: 60.0
 
 # Transformation matrix from right camera to left camera
 Stereo.T_c1_c2: !!opencv-matrix
   rows: 4
   cols: 4
   dt: f
-  # data: [1.0, 0.0, 0.0, 0.15,
-  #        0.0, 1.0, 0.0, 0.0,
-  #        0.0, 0.0, 1.0, 0.0,
-  #        0.0, 0.0, 0.0, 1.0]
-
   data: [0.9993229830308239, -0.0033998098053430875, -0.03663354855406632, 7.4293372064787215e-2,
         0.002422184954886954, 0.9996406100548775, -0.02669801020969142, -0.37157690076788735e-2,
         0.03671115098195589, 0.02659120197358444, 0.9989720713669527, 1.69543812338218e-2,
         0.0, 0.0, 0.0, 1.0]
-        
+
+  # data: [1.0, 0.0, 0.0, 0.15,
+  #        0.0, 1.0, 0.0, 0.0,
+  #        0.0, 0.0, 1.0, 0.0,
+  #        0.0, 0.0, 0.0, 1.0]
+      
   # data: [0.9993229830308239, -0.0033998098053430875, -0.03663354855406632, 14.858674412957443e-2,
   #       0.002422184954886954, 0.9996406100548775, -0.02669801020969142, -0.7431538015357747e-2,
   #       0.03671115098195589, 0.02659120197358444, 0.9989720713669527, 3.39087624676436e-2,
@@ -76,11 +99,11 @@ Stereo.T_c1_c2: !!opencv-matrix
 #
 #If you are using stereo fish-eye cameras (KannalaBrandt8), you also need to specify the overlapping area between both images:
 # Lapping area between images
-Camera1.overlappingBegin: 25
-Camera1.overlappingEnd: 639
+# Camera1.overlappingBegin: 25
+# Camera1.overlappingEnd: 639
 
-Camera2.overlappingBegin: 0
-Camera2.overlappingEnd: 614
+# Camera2.overlappingBegin: 0
+# Camera2.overlappingEnd: 614
 
 # Camera1.overlappingBegin: 225
 # Camera1.overlappingEnd: 439
@@ -93,11 +116,11 @@ Camera2.overlappingEnd: 614
 GlobalBundleAdjustment.Iterations: 50 #10
 
 # ORB GlobalBundleAdjustment: Execute BA every n frames 
-LoopClosing.BAfrequency: 50 #30
+LoopClosing.BAfrequency: 30 #30
 
 # Ransac Probability
-LoopClosing.fSim3SolverProbability: 0.99 #0.99
-Tracking.fMLPnPSolverProbability: 0.99 #0.99
+LoopClosing.fSim3SolverProbability: 0.999 #0.99
+Tracking.fMLPnPSolverProbability: 0.999 #0.99
 
 #--------------------------------------------------------------------------------------------
 # ORB Parameters
