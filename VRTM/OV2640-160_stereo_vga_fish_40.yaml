@@ -59,31 +59,26 @@ Stereo.T_c1_c2: !!opencv-matrix
   rows: 4
   cols: 4
   dt: f
-  # data: [1.0, 0.0, 0.0, 0.15,
-  #        0.0, 1.0, 0.0, 0.0,
-  #        0.0, 0.0, 1.0, 0.0,
-  #        0.0, 0.0, 0.0, 1.0]
-
-  data: [0.9993229830308239, -0.0033998098053430875, -0.03663354855406632, 7.4293372064787215e-2,
-        0.002422184954886954, 0.9996406100548775, -0.02669801020969142, -0.37157690076788735e-2,
-        0.03671115098195589, 0.02659120197358444, 0.9989720713669527, 1.69543812338218e-2,
+  data: [0.7930786058969725, -0.12438270312446369, 0.5962845529040359, 07.750311218103575e-2,
+        0.10725491993509846, 0.9921497458839041, 0.06430601754283835, 0.07061000359252809e-2,
+        -0.5996021239273841, 0.01295472523659786, 0.8001933941715679, -0.457296040922241e-2,
         0.0, 0.0, 0.0, 1.0]
-        
-  # data: [0.9993229830308239, -0.0033998098053430875, -0.03663354855406632, 14.858674412957443e-2,
-  #       0.002422184954886954, 0.9996406100548775, -0.02669801020969142, -0.7431538015357747e-2,
-  #       0.03671115098195589, 0.02659120197358444, 0.9989720713669527, 3.39087624676436e-2,
-  #       0.0, 0.0, 0.0, 1.0]
+
+  # data: [0.7930786058969731, 0.10725491993509867, -0.5996021239273832, -6.428374963803745e-2,
+  #      -0.12438270312446395, 0.9921497458839041, 0.012954725236597717, 0.8998731068043206e-2,
+  #      0.596284552904035, 0.0643060175428385, 0.8001933941715684, -4.260006236556954e-2,
+  #      0.0, 0.0, 0.0, 1.0]
 #
 #If you are using stereo fish-eye cameras (KannalaBrandt8), you also need to specify the overlapping area between both images:
 # Lapping area between images
-Camera1.overlappingBegin: 25
+Camera1.overlappingBegin: 0
 Camera1.overlappingEnd: 639
 
 Camera2.overlappingBegin: 0
-Camera2.overlappingEnd: 614
+Camera2.overlappingEnd: 639
 
-# Camera1.overlappingBegin: 225
-# Camera1.overlappingEnd: 439
+# Camera2.overlappingBegin: 225
+# Camera2.overlappingEnd: 439
 
 # Camera2.overlappingBegin: 200
 # Camera2.overlappingEnd: 414
@@ -104,7 +99,7 @@ Tracking.fMLPnPSolverProbability: 0.999 #0.99
 #--------------------------------------------------------------------------------------------
 
 # ORB Extractor: Number of features per image
-ORBextractor.nFeatures: 3000
+ORBextractor.nFeatures: 10000
 
 # ORB Extractor: Scale factor between levels in the scale pyramid 	
 ORBextractor.scaleFactor: 1.2

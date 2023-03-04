@@ -1059,10 +1059,11 @@ Frame::Frame(const cv::Mat &imLeft, const cv::Mat &imRight, const double &timeSt
     std::chrono::steady_clock::time_point time_StartExtORB = std::chrono::steady_clock::now();
 #endif
     // cout << "here is the actual kannalaBrand8 Problem!!!! (Frame.cc @ 1059)" << endl;
-    thread threadLeft(&Frame::ExtractORB,this,0,imLeft,25,639);
-    thread threadRight(&Frame::ExtractORB,this,1,imRight,0,614);
-    // thread threadLeft(&Frame::ExtractORB,this,0,imLeft,static_cast<KannalaBrandt8*>(mpCamera)->mvLappingArea[0],static_cast<KannalaBrandt8*>(mpCamera)->mvLappingArea[1]);
-    // thread threadRight(&Frame::ExtractORB,this,1,imRight,static_cast<KannalaBrandt8*>(mpCamera2)->mvLappingArea[0],static_cast<KannalaBrandt8*>(mpCamera2)->mvLappingArea[1]);    
+    cout << mpCamera << endl;
+    // thread threadLeft(&Frame::ExtractORB,this,0,imLeft,25,639);
+    // thread threadRight(&Frame::ExtractORB,this,1,imRight,0,614);
+    thread threadLeft(&Frame::ExtractORB,this,0,imLeft,static_cast<KannalaBrandt8*>(mpCamera)->mvLappingArea[0],static_cast<KannalaBrandt8*>(mpCamera)->mvLappingArea[1]);
+    thread threadRight(&Frame::ExtractORB,this,1,imRight,static_cast<KannalaBrandt8*>(mpCamera2)->mvLappingArea[0],static_cast<KannalaBrandt8*>(mpCamera2)->mvLappingArea[1]);    
     threadLeft.join();
     threadRight.join();
 #ifdef REGISTER_TIMES
