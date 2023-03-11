@@ -116,7 +116,10 @@ GeometricCamera* Atlas::AddCamera(GeometricCamera* pCam)
 {
     //Check if the camera already exists
     bool bAlreadyInMap = false;
+    cout << "you are here: Atlas 3100" << endl;
     int index_cam = -1;
+    cout << "you are here: Atlas 3200" << endl;
+    cout << mvpCameras.size() << endl;
     for(size_t i=0; i < mvpCameras.size(); ++i)
     {
         GeometricCamera* pCam_i = mvpCameras[i];
@@ -127,16 +130,20 @@ GeometricCamera* Atlas::AddCamera(GeometricCamera* pCam)
 
         if(pCam->GetType() == GeometricCamera::CAM_PINHOLE)
         {
+            cout << "you are here: Atlas 3300" << endl;
             if(((Pinhole*)pCam_i)->IsEqual(pCam))
             {
+                cout << "you are here: Atlas 3400"  << endl;
                 bAlreadyInMap = true;
                 index_cam = i;
             }
         }
         else if(pCam->GetType() == GeometricCamera::CAM_FISHEYE)
         {
+            cout << "you are here: Atlas 3500 (this is a fish eye cam)" << endl;
             if(((KannalaBrandt8*)pCam_i)->IsEqual(pCam))
             {
+                cout << "you are here: Atlas 3600" << endl;
                 bAlreadyInMap = true;
                 index_cam = i;
             }
@@ -145,9 +152,17 @@ GeometricCamera* Atlas::AddCamera(GeometricCamera* pCam)
 
     if(bAlreadyInMap)
     {
-        return mvpCameras[index_cam];
+        // cout << "you are here: Atlas 3700 (cam already in map)" << endl;
+        // cout << !static_cast<KannalaBrandt8*>(pCam)->mvLappingArea[1] << endl;
+        // cout << "you are here: Atlas 3701 (cam already in map)" << endl;
+        // cout << !static_cast<KannalaBrandt8*>(mvpCameras[index_cam])->mvLappingArea[1] << endl;
+        // cout << "you are here: Atlas 3702 (cam already in map)" << endl;
+        // mvpCameras[index_cam]->mvLappingArea = pCam->mvLappingArea;
+        // return mvpCameras[index_cam];  //this is the original code
+        return pCam;  //this is test code
     }
     else{
+        cout << "you are here: Atlas 3800 (cam not yet in map)" << endl;
         mvpCameras.push_back(pCam);
         return pCam;
     }

@@ -266,6 +266,9 @@ namespace ORB_SLAM3 {
 
                 static_cast<KannalaBrandt8*>(calibration1_)->mvLappingArea = vOverlapping;
             }
+
+                int colBegin = readParameter<int>(fSettings,"Camera1.overlappingBegin",found);
+            cout << "you are here: Settings 6000  colBegin = " << static_cast<KannalaBrandt8*>(calibration1_)->mvLappingArea[1] << endl;
         }
         else{
             cerr << "Error: " << cameraModel << " not known" << endl;
@@ -331,6 +334,7 @@ namespace ORB_SLAM3 {
             vector<int> vOverlapping = {colBegin, colEnd};
 
             static_cast<KannalaBrandt8*>(calibration2_)->mvLappingArea = vOverlapping;
+            cout << "you are here: Settings 6000   colBegin = " << static_cast<KannalaBrandt8*>(calibration1_)->mvLappingArea[1] << endl;
         }
 
         //Load stereo extrinsic calibration
@@ -477,7 +481,7 @@ namespace ORB_SLAM3 {
 
     void Settings::readLoadAndSave(cv::FileStorage &fSettings) {
         bool found;
-
+        
         sLoadFrom_ = readParameter<string>(fSettings,"System.LoadAtlasFromFile",found,false);
         sSaveto_ = readParameter<string>(fSettings,"System.SaveAtlasToFile",found,false);
     }

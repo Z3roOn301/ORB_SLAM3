@@ -50,6 +50,7 @@ Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer,
 {
     // Load camera parameters from settings file
     if(settings){
+        cout << "you are here: Tracking 4100" << endl;
         newParameterLoader(settings);
         fMLPnPSolverProbability = settings->fMLPnPSolverProbability();
     }
@@ -94,7 +95,8 @@ Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer,
             }
         }
     }
-
+    
+    cout << "you are here: Tracking 4200" << endl;
     initID = 0; lastID = 0;
     mbInitWith3KFs = false;
     mnNumDataset = 0;
@@ -534,9 +536,11 @@ Tracking::~Tracking()
 }
 
 void Tracking::newParameterLoader(Settings *settings) {
+    cout << "you are here: Tracking 7100" << endl;
     mpCamera = settings->camera1();
     mpCamera = mpAtlas->AddCamera(mpCamera);
-
+    cout << "you are here: Tracking 7101" << endl;
+    
     if(settings->needToUndistort()){
         mDistCoef = settings->camera1DistortionCoef();
     }
@@ -561,8 +565,10 @@ void Tracking::newParameterLoader(Settings *settings) {
 
     if((mSensor==System::STEREO || mSensor==System::IMU_STEREO || mSensor==System::IMU_RGBD) &&
         settings->cameraType() == Settings::KannalaBrandt){
+        cout << "you are here: Tracking 7200" << endl;
         mpCamera2 = settings->camera2();
         mpCamera2 = mpAtlas->AddCamera(mpCamera2);
+        cout << "you are here: Tracking 7201" << endl;
 
         mTlr = settings->Tlr();
 
@@ -782,6 +788,7 @@ bool Tracking::ParseCamParamFile(cv::FileStorage &fSettings)
     }
     else if(sCameraName == "KannalaBrandt8")
     {
+        cout << "you are here: Tracking 7300" << endl;
         float fx, fy, cx, cy;
         float k1, k2, k3, k4;
         mImageScale = 1.f;
@@ -1093,11 +1100,13 @@ bool Tracking::ParseCamParamFile(cv::FileStorage &fSettings)
                 vector<float> vCamCalib2{fx,fy,cx,cy,k1,k2,k3,k4};
                 mpCamera2 = new KannalaBrandt8(vCamCalib2);
                 mpCamera2 = mpAtlas->AddCamera(mpCamera2);
+                cout << "you are here: Tracking 7400" << endl;
 
                 mTlr = Converter::toSophus(cvTlr);
 
                 static_cast<KannalaBrandt8*>(mpCamera2)->mvLappingArea[0] = rightLappingBegin;
                 static_cast<KannalaBrandt8*>(mpCamera2)->mvLappingArea[1] = rightLappingEnd;
+                cout << "you are here: Tracking 7500" << endl;
 
                 std::cout << "- Camera1 Lapping: " << leftLappingBegin << ", " << leftLappingEnd << std::endl;
 
@@ -1455,7 +1464,8 @@ bool Tracking::GetStepByStep()
 Sophus::SE3f Tracking::GrabImageStereo(const cv::Mat &imRectLeft, const cv::Mat &imRectRight, const double &timestamp, string filename)
 {
     // cout << "GrabImageStereo" << endl;
-
+    cout << filename << endl;
+    cout << static_cast<KannalaBrandt8*>(mpCamera)->mvLappingArea[1] << endl;
     mImGray = imRectLeft;
     cv::Mat imGrayRight = imRectRight;
     mImRight = imRectRight;
@@ -1489,6 +1499,8 @@ Sophus::SE3f Tracking::GrabImageStereo(const cv::Mat &imRectLeft, const cv::Mat 
         }
     }
 
+    cout << "you are here: Tracking 8200" << endl;
+    cout << static_cast<KannalaBrandt8*>(mpCamera)->mvLappingArea[1] << endl;
     // cout << "Incoming frame creation" << endl;
     if (mSensor == System::STEREO && !mpCamera2){
         mCurrentFrame = Frame(mImGray,imGrayRight,timestamp,mpORBextractorLeft,mpORBextractorRight,mpORBVocabulary,mK,mDistCoef,mbf,mThDepth,mpCamera);}
@@ -1500,9 +1512,10 @@ Sophus::SE3f Tracking::GrabImageStereo(const cv::Mat &imRectLeft, const cv::Mat 
         mCurrentFrame = Frame(mImGray,imGrayRight,timestamp,mpORBextractorLeft,mpORBextractorRight,mpORBVocabulary,mK,mDistCoef,mbf,mThDepth,mpCamera,mpCamera2,mTlr,&mLastFrame,*mpImuCalib);
 
     // cout << "Incoming frame ended" << endl;
-
+    cout << "you are here: Tracking 8300" << endl;
     mCurrentFrame.mNameFile = filename;
     mCurrentFrame.mnDataset = mnNumDataset;
+    cout << "you are here: Tracking 8400" << endl;
 
 #ifdef REGISTER_TIMES
     vdORBExtract_ms.push_back(mCurrentFrame.mTimeORB_Ext);
@@ -1512,7 +1525,7 @@ Sophus::SE3f Tracking::GrabImageStereo(const cv::Mat &imRectLeft, const cv::Mat 
     // cout << "Tracking start" << endl;
     Track();
     // cout << "Tracking end" << endl;
-
+    cout << "you are here: Tracking 8410" << endl;
     return mCurrentFrame.GetPose();
 }
 
@@ -1809,12 +1822,14 @@ void Tracking::Track()
         return;
     }
 
+    cout << "You are here: Tracking 2000" << endl;
     Map* pCurrentMap = mpAtlas->GetCurrentMap();
+    cout << "You are here: Tracking 2100" << endl;
     if(!pCurrentMap)
     {
         cout << "ERROR: There is not an active map in the atlas" << endl;
     }
-
+    cout << "You are here: Tracking 2200" << endl;
     if(mState!=NO_IMAGES_YET)
     {
         if(mLastFrame.mTimeStamp>mCurrentFrame.mTimeStamp)
@@ -1855,17 +1870,18 @@ void Tracking::Track()
         }
     }
 
-
+    cout << "You are here: Tracking 2300" << endl;
     if ((mSensor == System::IMU_MONOCULAR || mSensor == System::IMU_STEREO || mSensor == System::IMU_RGBD) && mpLastKeyFrame)
         mCurrentFrame.SetNewBias(mpLastKeyFrame->GetImuBias());
 
+    cout << "You are here: Tracking 2400" << endl;
     if(mState==NO_IMAGES_YET)
     {
         mState = NOT_INITIALIZED;
     }
-
+    cout << "You are here: Tracking 2500" << endl;
     mLastProcessedState=mState;
-
+    cout << "You are here: Tracking 2600" << endl;
     if ((mSensor == System::IMU_MONOCULAR || mSensor == System::IMU_STEREO || mSensor == System::IMU_RGBD) && !mbCreatedMap)
     {
 #ifdef REGISTER_TIMES
@@ -1881,7 +1897,7 @@ void Tracking::Track()
 
     }
     mbCreatedMap = false;
-
+    cout << "You are here: Tracking 2700" << endl;
     // Get Map Mutex -> Map cannot be changed
     unique_lock<mutex> lock(pCurrentMap->mMutexMapUpdate);
 
@@ -1895,9 +1911,10 @@ void Tracking::Track()
         mbMapUpdated = true;
     }
 
-
+    cout << "You are here: Tracking 2800" << endl;
     if(mState==NOT_INITIALIZED)
     {
+        cout << "You are here: Tracking 2810" << endl;
         if(mSensor==System::STEREO || mSensor==System::RGBD || mSensor==System::IMU_STEREO || mSensor==System::IMU_RGBD)
         {
             StereoInitialization();
@@ -1924,7 +1941,7 @@ void Tracking::Track()
     {
         // System is initialized. Track Frame.
         bool bOK;
-
+        cout << "You are here: Tracking 2820" << endl;
 #ifdef REGISTER_TIMES
         std::chrono::steady_clock::time_point time_StartPosePred = std::chrono::steady_clock::now();
 #endif
@@ -1932,13 +1949,13 @@ void Tracking::Track()
         // Initial camera pose estimation using motion model or relocalization (if tracking is lost)
         if(!mbOnlyTracking)
         {
-
+            cout << "You are here: Tracking 2830" << endl;
             // State OK
             // Local Mapping is activated. This is the normal behaviour, unless
             // you explicitly activate the "only tracking" mode.
             if(mState==OK)
             {
-
+                cout << "You are here: Tracking 2831" << endl;
                 // Local Mapping might have changed some MapPoints tracked in last frame
                 CheckReplacedInLastFrame();
 
@@ -1955,7 +1972,7 @@ void Tracking::Track()
                         bOK = TrackReferenceKeyFrame();
                 }
 
-
+                cout << "You are here: Tracking 2833" << endl;
                 if (!bOK)
                 {
                     if ( mCurrentFrame.mnId<=(mnLastRelocFrameId+mnFramesToResetIMU) &&
@@ -1977,11 +1994,11 @@ void Tracking::Track()
             }
             else
             {
-
+                
                 if (mState == RECENTLY_LOST)
                 {
                     Verbose::PrintMess("Lost for a short time", Verbose::VERBOSITY_NORMAL);
-
+                    cout << "You are here: Tracking 2835" << endl;
                     bOK = true;
                     if((mSensor == System::IMU_MONOCULAR || mSensor == System::IMU_STEREO || mSensor == System::IMU_RGBD))
                     {
@@ -2000,11 +2017,14 @@ void Tracking::Track()
                     else
                     {
                         // Relocalization
+                        cout << "You are here: Tracking 2835_1" << endl;
                         bOK = Relocalization();
+                        cout << "You are here: Tracking 2835_2" << endl;
                         //std::cout << "mCurrentFrame.mTimeStamp:" << to_string(mCurrentFrame.mTimeStamp) << std::endl;
                         //std::cout << "mTimeStampLost:" << to_string(mTimeStampLost) << std::endl;
                         if(mCurrentFrame.mTimeStamp-mTimeStampLost>3.0f && !bOK)
                         {
+                            cout << "You are here: Tracking 2835_3" << endl;
                             mState = LOST;
                             Verbose::PrintMess("Track Lost...", Verbose::VERBOSITY_NORMAL);
                             bOK=false;
@@ -2015,7 +2035,7 @@ void Tracking::Track()
                 {
 
                     Verbose::PrintMess("A new map is started...", Verbose::VERBOSITY_NORMAL);
-
+                    cout << "You are here: Tracking 2837" << endl;
                     if (pCurrentMap->KeyFramesInMap()<10)
                     {
                         mpSystem->ResetActiveMap();
@@ -2035,6 +2055,7 @@ void Tracking::Track()
         }
         else
         {
+            cout << "You are here: Tracking 2840" << endl;
             // Localization Mode: Local Mapping is deactivated (TODO Not available in inertial mode)
             if(mState==LOST)
             {
@@ -2108,6 +2129,7 @@ void Tracking::Track()
         if(!mCurrentFrame.mpReferenceKF)
             mCurrentFrame.mpReferenceKF = mpReferenceKF;
 
+    cout << "You are here: Tracking 2900" << endl;
 #ifdef REGISTER_TIMES
         std::chrono::steady_clock::time_point time_EndPosePred = std::chrono::steady_clock::now();
 
@@ -2189,7 +2211,7 @@ void Tracking::Track()
                     mLastBias = mCurrentFrame.mImuBias;
             }
         }
-
+    cout << "You are here: Tracking 2910" << endl;
 #ifdef REGISTER_TIMES
         std::chrono::steady_clock::time_point time_EndLMTrack = std::chrono::steady_clock::now();
 
@@ -2238,6 +2260,7 @@ void Tracking::Track()
             }
             mlpTemporalPoints.clear();
 
+    cout << "You are here: Tracking 2920" << endl;
 #ifdef REGISTER_TIMES
             std::chrono::steady_clock::time_point time_StartNewKF = std::chrono::steady_clock::now();
 #endif
@@ -2295,7 +2318,7 @@ void Tracking::Track()
     }
 
 
-
+    cout << "You are here: Tracking 2930" << endl;
 
     if(mState==OK || mState==RECENTLY_LOST)
     {
@@ -3610,6 +3633,7 @@ bool Tracking::Relocalization()
 {
     Verbose::PrintMess("Starting relocalization", Verbose::VERBOSITY_NORMAL);
     // Compute Bag of Words Vector
+    
     mCurrentFrame.ComputeBoW();
 
     // Relocalization is performed when tracking is lost
@@ -3667,6 +3691,8 @@ bool Tracking::Relocalization()
     bool bMatch = false;
     ORBmatcher matcher2(0.9,true);
 
+
+    cout << "you are here 999_0001" << endl;
     while(nCandidates>0 && !bMatch)
     {
         for(int i=0; i<nKFs; i++)
@@ -3682,7 +3708,8 @@ bool Tracking::Relocalization()
             MLPnPsolver* pSolver = vpMLPnPsolvers[i];
             Eigen::Matrix4f eigTcw;
             bool bTcw = pSolver->iterate(5,bNoMore,vbInliers,nInliers, eigTcw);
-
+            
+            cout << "you are here 999_0002" << endl;
             // If Ransac reachs max. iterations discard keyframe
             if(bNoMore)
             {
@@ -3721,30 +3748,33 @@ bool Tracking::Relocalization()
                     if(mCurrentFrame.mvbOutlier[io])
                         mCurrentFrame.mvpMapPoints[io]=static_cast<MapPoint*>(NULL);
 
+                cout << "you are here 999_0003" << endl;
                 // If few inliers, search by projection in a coarse window and optimize again
                 if(nGood<50)
                 {
+                    cout << "you are here 999_00030" << endl;
                     int nadditional =matcher2.SearchByProjection(mCurrentFrame,vpCandidateKFs[i],sFound,10,100);
-
+                    cout << "you are here 999_00031" << endl;
                     if(nadditional+nGood>=50)
                     {
                         nGood = Optimizer::PoseOptimization(&mCurrentFrame);
-
+                        cout << "you are here 999_00032" << endl;
                         // If many inliers but still not enough, search by projection again in a narrower window
                         // the camera has been already optimized with many points
                         if(nGood>30 && nGood<50)
                         {
+                            cout << "you are here 999_00033" << endl;
                             sFound.clear();
                             for(int ip =0; ip<mCurrentFrame.N; ip++)
                                 if(mCurrentFrame.mvpMapPoints[ip])
                                     sFound.insert(mCurrentFrame.mvpMapPoints[ip]);
                             nadditional =matcher2.SearchByProjection(mCurrentFrame,vpCandidateKFs[i],sFound,3,64);
-
+                            cout << "you are here 999_00034" << endl;
                             // Final optimization
                             if(nGood+nadditional>=50)
                             {
                                 nGood = Optimizer::PoseOptimization(&mCurrentFrame);
-
+                                cout << "you are here 999_00035" << endl;
                                 for(int io =0; io<mCurrentFrame.N; io++)
                                     if(mCurrentFrame.mvbOutlier[io])
                                         mCurrentFrame.mvpMapPoints[io]=NULL;
@@ -3753,7 +3783,7 @@ bool Tracking::Relocalization()
                     }
                 }
 
-
+                cout << "you are here 999_0004" << endl;
                 // If the pose is supported by enough inliers stop ransacs and continue
                 if(nGood>=50)
                 {

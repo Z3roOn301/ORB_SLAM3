@@ -49,6 +49,7 @@ int main(int argc, char **argv)
         file_name = string(argv[argc-1]);
         cout << "file name: " << file_name << endl;
     }
+    cout << "you are here: stereo_VRTM 1000" << endl;
 
     // Load all sequences:
     int seq;
@@ -61,6 +62,8 @@ int main(int argc, char **argv)
     vstrImageRight.resize(num_seq);
     vTimestampsCam.resize(num_seq);
     nImages.resize(num_seq);
+
+    cout << "you are here: stereo_VRTM 1001" << endl;
 
     int tot_images = 0;
     for (seq = 0; seq<num_seq; seq++)
@@ -87,8 +90,10 @@ int main(int argc, char **argv)
     cout << endl << "-------" << endl;
     cout.precision(17);
 
+    cout << "you are here: stereo_VRTM 1002" << endl;
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
     ORB_SLAM3::System SLAM(argv[1],argv[2],ORB_SLAM3::System::STEREO, true);
+    cout << "you are here: stereo_VRTM 1003" << endl;
 
     cv::Mat imLeft, imRight;
 
@@ -126,8 +131,9 @@ int main(int argc, char **argv)
     #else
             std::chrono::monotonic_clock::time_point t1 = std::chrono::monotonic_clock::now();
     #endif
-
+            cout << "you are here: stereo_VRTM 1004" << endl;
             SLAM.TrackStereo(imLeft,imRight,tframe, vector<ORB_SLAM3::IMU::Point>(), vstrImageLeft[seq][ni]);
+            cout << "you are here: stereo_VRTM 1005" << endl;
 
     #ifdef COMPILEDWITHC11
             std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
@@ -144,7 +150,7 @@ int main(int argc, char **argv)
             double ttrack= std::chrono::duration_cast<std::chrono::duration<double> >(t2 - t1).count();
 
             vTimesTrack[ni]=ttrack;
-
+            cout << "you are here: stereo_VRTM 1006" << endl;
             // Wait to load the next frame
             double T=0;
             if(ni<nImages[seq]-1)
@@ -156,6 +162,7 @@ int main(int argc, char **argv)
                 usleep((T-ttrack)*1e6); // 1e6
         }
 
+        cout << "you are here: stereo_VRTM 1007" << endl;
         if(seq < num_seq - 1)
         {
             cout << "Changing the dataset" << endl;
