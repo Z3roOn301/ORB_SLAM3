@@ -2214,6 +2214,7 @@ void Tracking::Track()
 #endif
 
         // Update drawer
+        cout << "You are here: Tracking 2911";
         mpFrameDrawer->Update(this);
         if(mCurrentFrame.isSet())
             mpMapDrawer->SetCurrentCameraPose(mCurrentFrame.GetPose());

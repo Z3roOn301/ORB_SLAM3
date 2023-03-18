@@ -369,12 +369,13 @@ void FrameDrawer::DrawTextInfo(cv::Mat &im, int nState, cv::Mat &imText)
 
 void FrameDrawer::Update(Tracking *pTracker)
 {
+    cout << endl <<"you are here: Framedrawer 1";
     unique_lock<mutex> lock(mMutex);
     pTracker->mImGray.copyTo(mIm);
     mvCurrentKeys=pTracker->mCurrentFrame.mvKeys;
     mThDepth = pTracker->mCurrentFrame.mThDepth;
     mvCurrentDepth = pTracker->mCurrentFrame.mvDepth;
-
+    cout << " 2"  ;
     if(both){
         mvCurrentKeysRight = pTracker->mCurrentFrame.mvKeysRight;
         pTracker->mImRight.copyTo(mImRight);
@@ -383,16 +384,16 @@ void FrameDrawer::Update(Tracking *pTracker)
     else{
         N = mvCurrentKeys.size();
     }
-
+    cout << " 3"  ;
     mvbVO = vector<bool>(N,false);
     mvbMap = vector<bool>(N,false);
     mbOnlyTracking = pTracker->mbOnlyTracking;
-
+    cout << " 4"  ;
     //Variables for the new visualization
     mCurrentFrame = pTracker->mCurrentFrame;
     mmProjectPoints = mCurrentFrame.mmProjectPoints;
     mmMatchedInImage.clear();
-
+    cout << " 5"  ;
     mvpLocalMap = pTracker->GetLocalMapMPS();
     mvMatchedKeys.clear();
     mvMatchedKeys.reserve(N);
@@ -402,14 +403,21 @@ void FrameDrawer::Update(Tracking *pTracker)
     mvOutlierKeys.reserve(N);
     mvpOutlierMPs.clear();
     mvpOutlierMPs.reserve(N);
-
+    cout << " 6"  ;
     if(pTracker->mLastProcessedState==Tracking::NOT_INITIALIZED)
     {
+        cout << " 7"  ;
         mvIniKeys=pTracker->mInitialFrame.mvKeys;
         mvIniMatches=pTracker->mvIniMatches;
     }
     else if(pTracker->mLastProcessedState==Tracking::OK)
     {
+        cout << " 8   " << endl  ;
+        cout << "pTracker " << sizeof(pTracker->mCurrentFrame) << endl;
+        cout << "Size of Map "<< pTracker->mCurrentFrame.mvpMapPoints.size() << "      N " << N  <<  endl;
+        cout << "Outlier "<< pTracker->mCurrentFrame.mvbOutlier.size() << endl;
+        cout << "Curent keys "<< mvCurrentKeys.size() << endl;
+
         for(int i=0;i<N;i++)
         {
             MapPoint* pMP = pTracker->mCurrentFrame.mvpMapPoints[i];
@@ -433,6 +441,7 @@ void FrameDrawer::Update(Tracking *pTracker)
         }
 
     }
+    cout << " 9" ;
     mState=static_cast<int>(pTracker->mLastProcessedState);
 }
 

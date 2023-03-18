@@ -62,6 +62,13 @@ ORBextractor.nLevels: 8
 ORBextractor.iniThFAST: 20
 ORBextractor.minThFAST: 7
 
+# ORB GlobalBundleAdjustment: Number of Iterations 
+GlobalBundleAdjustment.Iterations: 3000 #10
+
+# Ransac Probability
+LoopClosing.fSim3SolverProbability: 0.999 #0.99
+Tracking.fMLPnPSolverProbability: 0.999 #0.99
+
 #--------------------------------------------------------------------------------------------
 # Viewer Parameters
 #---------------------------------------------------------------------------------------------

@@ -45,6 +45,7 @@ namespace ORB_SLAM3
         int nmatches=0, left = 0, right = 0;
 
         const bool bFactor = th!=1.0;
+        cout << endl <<"you are here: SearchByProjection V1";
 
         for(size_t iMP=0; iMP<vpMapPoints.size(); iMP++)
         {
@@ -54,7 +55,6 @@ namespace ORB_SLAM3
 
             if(bFarPoints && pMP->mTrackDepth>thFarPoints)
                 continue;
-
             if(pMP->isBad())
                 continue;
 
@@ -70,7 +70,6 @@ namespace ORB_SLAM3
 
                 const vector<size_t> vIndices =
                         F.GetFeaturesInArea(pMP->mTrackProjX,pMP->mTrackProjY,r*F.mvScaleFactors[nPredictedLevel],nPredictedLevel-1,nPredictedLevel);
-
                 if(!vIndices.empty()){
                     const cv::Mat MPdescriptor = pMP->GetDescriptor();
 
@@ -209,6 +208,7 @@ namespace ORB_SLAM3
                 }
             }
         }
+
         return nmatches;
     }
 
@@ -427,6 +427,7 @@ namespace ORB_SLAM3
     int ORBmatcher::SearchByProjection(KeyFrame* pKF, Sophus::Sim3f &Scw, const vector<MapPoint*> &vpPoints,
                                        vector<MapPoint*> &vpMatched, int th, float ratioHamming)
     {
+        cout << endl <<"you are here: SearchByProjection V2";
         // Get Calibration Parameters for later projection
         const float &fx = pKF->fx;
         const float &fy = pKF->fy;
@@ -534,6 +535,7 @@ namespace ORB_SLAM3
     int ORBmatcher::SearchByProjection(KeyFrame* pKF, Sophus::Sim3<float> &Scw, const std::vector<MapPoint*> &vpPoints, const std::vector<KeyFrame*> &vpPointsKFs,
                                        std::vector<MapPoint*> &vpMatched, std::vector<KeyFrame*> &vpMatchedKF, int th, float ratioHamming)
     {
+        cout << endl <<"you are here: SearchByProjection V3";
         // Get Calibration Parameters for later projection
         const float &fx = pKF->fx;
         const float &fy = pKF->fy;
@@ -1676,7 +1678,7 @@ namespace ORB_SLAM3
     int ORBmatcher::SearchByProjection(Frame &CurrentFrame, const Frame &LastFrame, const float th, const bool bMono)
     {
         int nmatches = 0;
-
+        cout << endl <<"you are here: SearchByProjection V4";
         // Rotation Histogram (to check rotation consistency)
         vector<int> rotHist[HISTO_LENGTH];
         for(int i=0;i<HISTO_LENGTH;i++)
@@ -1888,6 +1890,7 @@ namespace ORB_SLAM3
 
     int ORBmatcher::SearchByProjection(Frame &CurrentFrame, KeyFrame *pKF, const set<MapPoint*> &sAlreadyFound, const float th , const int ORBdist)
     {
+        cout << endl <<"you are here: SearchByProjection V5";
         int nmatches = 0;
         const Sophus::SE3f Tcw = CurrentFrame.GetPose();
         Eigen::Vector3f Ow = Tcw.inverse().translation();
@@ -1895,9 +1898,11 @@ namespace ORB_SLAM3
         // Rotation Histogram (to check rotation consistency)
         vector<int> rotHist[HISTO_LENGTH];
         for(int i=0;i<HISTO_LENGTH;i++)
-            rotHist[i].reserve(500);
+            rotHist[i].reserve(500); // maybe cause for crash
         const float factor = 1.0f/HISTO_LENGTH;
         const vector<MapPoint*> vpMPs = pKF->GetMapPointMatches();
+
+
 
         for(size_t i=0, iend=vpMPs.size(); i<iend; i++)
         {
@@ -1962,18 +1967,30 @@ namespace ORB_SLAM3
                         cout << "OrbMatcher line 1962: mvpMapPoints " << CurrentFrame.mvpMapPoints.size() << "   entry0 " << sizeof(CurrentFrame.mvpMapPoints[0]) << "   index " << bestIdx2 <<endl;
                         CurrentFrame.mvpMapPoints[bestIdx2]=pMP;
                         nmatches++;
-                        cout << " 1";
+                        cout << " 1.";
+                        cout << mbCheckOrientation;
 
-                        if(mbCheckOrientation)
+                        if(mbCheckOrientation && pKF->mvKeysUn.size() > i) //the secoond part of this funktion was modified VRTM_RSO
                         {
                             cout << endl << "you are here ORBmatcher 999_01008";
                             float rot = pKF->mvKeysUn[i].angle-CurrentFrame.mvKeysUn[bestIdx2].angle;
+                            cout << " 1.2" ;
                             if(rot<0.0)
                                 rot+=360.0f;
                             int bin = round(rot*factor);
+                            cout << " 1.3" ;
                             if(bin==HISTO_LENGTH)
                                 bin=0;
+                            cout << "  i: " << i << "    ";
+                            cout << "  iend: " << iend << "    ";
+                            cout << "  keysun:  " << pKF->mvKeysUn.size() << "    ";
+                            cout << "   " << pKF->mvKeysUn[i].angle << "    ";
+                            cout << "   " << CurrentFrame.mvKeysUn[bestIdx2].angle << "    ";
+                            cout << "   " << rot << "    ";
+                            cout << "   " << factor << "    ";
+                            cout << "   " << bin << "    ";
                             assert(bin>=0 && bin<HISTO_LENGTH);
+                            cout << " 1.4" ;
                             rotHist[bin].push_back(bestIdx2);
                             cout << " 3" ;
                         }
