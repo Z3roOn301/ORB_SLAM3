@@ -7,6 +7,7 @@
 # When the variables are commented, the system doesn't load a previous session or not store the current one
 
 # If the LoadFile doesn't exist, the system give a message and create a new Atlas from scratch
+# System.LoadAtlasFromFile: "Session_stereo_eigenbau_pinhole_5"
 # System.LoadAtlasFromFile: "Session_stereo_eigenbau_Kannala_5_2"
 
 # The store file is created from the current session, if a file with the same name exists it is deleted
@@ -63,11 +64,15 @@ Stereo.T_c1_c2: !!opencv-matrix
   #        0.0, 1.0, 0.0, 0.0,
   #        0.0, 0.0, 1.0, 0.0,
   #        0.0, 0.0, 0.0, 1.0]
-
-  data: [0.9993229830308239, -0.0033998098053430875, -0.03663354855406632, 7.4293372064787215e-2,
-        0.002422184954886954, 0.9996406100548775, -0.02669801020969142, -0.37157690076788735e-2,
-        0.03671115098195589, 0.02659120197358444, 0.9989720713669527, 1.69543812338218e-2,
+  data: [0.9993229830308239, -0.0033998098053430875, -0.03663354855406632, 6.86e-2,
+        0.002422184954886954, 0.9996406100548775, -0.02669801020969142, -0.34e-2,
+        0.03671115098195589, 0.02659120197358444, 0.9989720713669527, 1.57e-2,
         0.0, 0.0, 0.0, 1.0]
+
+  # data: [0.9993229830308239, -0.0033998098053430875, -0.03663354855406632, 7.4293372064787215e-2,
+  #       0.002422184954886954, 0.9996406100548775, -0.02669801020969142, -0.37157690076788735e-2,
+  #       0.03671115098195589, 0.02659120197358444, 0.9989720713669527, 1.69543812338218e-2,
+  #       0.0, 0.0, 0.0, 1.0]
         
   # data: [0.9993229830308239, -0.0033998098053430875, -0.03663354855406632, 14.858674412957443e-2,
   #       0.002422184954886954, 0.9996406100548775, -0.02669801020969142, -0.7431538015357747e-2,
@@ -76,6 +81,12 @@ Stereo.T_c1_c2: !!opencv-matrix
 #
 #If you are using stereo fish-eye cameras (KannalaBrandt8), you also need to specify the overlapping area between both images:
 # Lapping area between images
+# Camera1.overlappingBegin: 320
+# Camera1.overlappingEnd: 639
+
+# Camera2.overlappingBegin: 320
+# Camera2.overlappingEnd: 639
+
 Camera1.overlappingBegin: 25
 Camera1.overlappingEnd: 639
 
