@@ -50,7 +50,6 @@ Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer,
 {
     // Load camera parameters from settings file
     if(settings){
-        cout << "you are here: Tracking 4100" << endl;
         newParameterLoader(settings);
         fMLPnPSolverProbability = settings->fMLPnPSolverProbability();
     }
@@ -96,7 +95,6 @@ Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer,
         }
     }
     
-    cout << "you are here: Tracking 4200" << endl;
     initID = 0; lastID = 0;
     mbInitWith3KFs = false;
     mnNumDataset = 0;
@@ -536,7 +534,6 @@ Tracking::~Tracking()
 }
 
 void Tracking::newParameterLoader(Settings *settings) {
-    cout << "you are here: Tracking 7100" << endl;
     mpCamera = settings->camera1();
     mpCamera = mpAtlas->AddCamera(mpCamera);
     cout << "you are here: Tracking 7101" << endl;
@@ -565,10 +562,8 @@ void Tracking::newParameterLoader(Settings *settings) {
 
     if((mSensor==System::STEREO || mSensor==System::IMU_STEREO || mSensor==System::IMU_RGBD) &&
         settings->cameraType() == Settings::KannalaBrandt){
-        cout << "you are here: Tracking 7200" << endl;
         mpCamera2 = settings->camera2();
         mpCamera2 = mpAtlas->AddCamera(mpCamera2);
-        cout << "you are here: Tracking 7201" << endl;
 
         mTlr = settings->Tlr();
 
@@ -788,7 +783,6 @@ bool Tracking::ParseCamParamFile(cv::FileStorage &fSettings)
     }
     else if(sCameraName == "KannalaBrandt8")
     {
-        cout << "you are here: Tracking 7300" << endl;
         float fx, fy, cx, cy;
         float k1, k2, k3, k4;
         mImageScale = 1.f;
@@ -1465,7 +1459,6 @@ Sophus::SE3f Tracking::GrabImageStereo(const cv::Mat &imRectLeft, const cv::Mat 
 {
     // cout << "GrabImageStereo" << endl;
     cout << filename << endl;
-    cout << static_cast<KannalaBrandt8*>(mpCamera)->mvLappingArea[1] << endl;
     mImGray = imRectLeft;
     cv::Mat imGrayRight = imRectRight;
     mImRight = imRectRight;
@@ -1500,7 +1493,6 @@ Sophus::SE3f Tracking::GrabImageStereo(const cv::Mat &imRectLeft, const cv::Mat 
     }
 
     cout << "you are here: Tracking 8200" << endl;
-    cout << static_cast<KannalaBrandt8*>(mpCamera)->mvLappingArea[1] << endl;
     // cout << "Incoming frame creation" << endl;
     if (mSensor == System::STEREO && !mpCamera2){
         mCurrentFrame = Frame(mImGray,imGrayRight,timestamp,mpORBextractorLeft,mpORBextractorRight,mpORBVocabulary,mK,mDistCoef,mbf,mThDepth,mpCamera);}
@@ -2129,7 +2121,7 @@ void Tracking::Track()
         if(!mCurrentFrame.mpReferenceKF)
             mCurrentFrame.mpReferenceKF = mpReferenceKF;
 
-    cout << "You are here: Tracking 2900" << endl;
+        cout << "You are here: Tracking 2900" << endl;
 #ifdef REGISTER_TIMES
         std::chrono::steady_clock::time_point time_EndPosePred = std::chrono::steady_clock::now();
 
@@ -2159,7 +2151,9 @@ void Tracking::Track()
             // the camera we will use the local map again.
             if(bOK && !mbVO)
                 bOK = TrackLocalMap();
+            cout << "You are here: Tracking 2901" << endl;
         }
+        cout << "You are here: Tracking 2902" << endl;
 
         if(bOK)
             mState = OK;
@@ -2184,7 +2178,7 @@ void Tracking::Track()
                 mTimeStampLost = mCurrentFrame.mTimeStamp;
             //}
         }
-
+        cout << "You are here: Tracking 2903" << endl;
         // Save frame if recent relocalization, since they are used for IMU reset (as we are making copy, it shluld be once mCurrFrame is completely modified)
         if((mCurrentFrame.mnId<(mnLastRelocFrameId+mnFramesToResetIMU)) && (mCurrentFrame.mnId > mnFramesToResetIMU) &&
            (mSensor == System::IMU_MONOCULAR || mSensor == System::IMU_STEREO || mSensor == System::IMU_RGBD) && pCurrentMap->isImuInitialized())
@@ -2197,7 +2191,7 @@ void Tracking::Track()
             // Load preintegration
             pF->mpImuPreintegratedFrame = new IMU::Preintegrated(mCurrentFrame.mpImuPreintegratedFrame);
         }
-
+        cout << "You are here: Tracking 2904" << endl;
         if(pCurrentMap->isImuInitialized())
         {
             if(bOK)
@@ -2211,7 +2205,7 @@ void Tracking::Track()
                     mLastBias = mCurrentFrame.mImuBias;
             }
         }
-    cout << "You are here: Tracking 2910" << endl;
+    cout << "You are here: Tracking 2910";
 #ifdef REGISTER_TIMES
         std::chrono::steady_clock::time_point time_EndLMTrack = std::chrono::steady_clock::now();
 
@@ -2223,7 +2217,7 @@ void Tracking::Track()
         mpFrameDrawer->Update(this);
         if(mCurrentFrame.isSet())
             mpMapDrawer->SetCurrentCameraPose(mCurrentFrame.GetPose());
-
+        cout << " 1";
         if(bOK || mState==RECENTLY_LOST)
         {
             // Update motion model
@@ -2236,10 +2230,10 @@ void Tracking::Track()
             else {
                 mbVelocity = false;
             }
-
+            cout << " 2";
             if(mSensor == System::IMU_MONOCULAR || mSensor == System::IMU_STEREO || mSensor == System::IMU_RGBD)
                 mpMapDrawer->SetCurrentCameraPose(mCurrentFrame.GetPose());
-
+            cout << " 3";
             // Clean VO matches
             for(int i=0; i<mCurrentFrame.N; i++)
             {
@@ -2251,7 +2245,7 @@ void Tracking::Track()
                         mCurrentFrame.mvpMapPoints[i]=static_cast<MapPoint*>(NULL);
                     }
             }
-
+            cout << " 4";
             // Delete temporal MapPoints
             for(list<MapPoint*>::iterator lit = mlpTemporalPoints.begin(), lend =  mlpTemporalPoints.end(); lit!=lend; lit++)
             {
@@ -2318,7 +2312,6 @@ void Tracking::Track()
     }
 
 
-    cout << "You are here: Tracking 2930" << endl;
 
     if(mState==OK || mState==RECENTLY_LOST)
     {
@@ -3692,7 +3685,6 @@ bool Tracking::Relocalization()
     ORBmatcher matcher2(0.9,true);
 
 
-    cout << "you are here 999_0001" << endl;
     while(nCandidates>0 && !bMatch)
     {
         for(int i=0; i<nKFs; i++)

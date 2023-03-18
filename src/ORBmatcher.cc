@@ -1889,22 +1889,19 @@ namespace ORB_SLAM3
     int ORBmatcher::SearchByProjection(Frame &CurrentFrame, KeyFrame *pKF, const set<MapPoint*> &sAlreadyFound, const float th , const int ORBdist)
     {
         int nmatches = 0;
-        cout << "you are here 999_01001" << endl;
         const Sophus::SE3f Tcw = CurrentFrame.GetPose();
         Eigen::Vector3f Ow = Tcw.inverse().translation();
-        cout << "you are here 999_01001" << endl;
+
         // Rotation Histogram (to check rotation consistency)
         vector<int> rotHist[HISTO_LENGTH];
         for(int i=0;i<HISTO_LENGTH;i++)
             rotHist[i].reserve(500);
         const float factor = 1.0f/HISTO_LENGTH;
-        cout << "you are here 999_01001" << endl;
         const vector<MapPoint*> vpMPs = pKF->GetMapPointMatches();
 
         for(size_t i=0, iend=vpMPs.size(); i<iend; i++)
         {
             MapPoint* pMP = vpMPs[i];
-            cout << "you are here 999_01001" << endl;
             if(pMP)
             {
                 if(!pMP->isBad() && !sAlreadyFound.count(pMP))
@@ -1919,25 +1916,23 @@ namespace ORB_SLAM3
                         continue;
                     if(uv(1)<CurrentFrame.mnMinY || uv(1)>CurrentFrame.mnMaxY)
                         continue;
-                    cout << "you are here 999_01002" << endl;
+
                     // Compute predicted scale level
                     Eigen::Vector3f PO = x3Dw-Ow;
                     float dist3D = PO.norm();
 
                     const float maxDistance = pMP->GetMaxDistanceInvariance();
                     const float minDistance = pMP->GetMinDistanceInvariance();
-                    cout << "you are here 999_01003" << endl;
+
                     // Depth must be inside the scale pyramid of the image
                     if(dist3D<minDistance || dist3D>maxDistance)
                         continue;
 
                     int nPredictedLevel = pMP->PredictScale(dist3D,&CurrentFrame);
-                    cout << "you are here 999_01004" << endl;
                     // Search in a window
                     const float radius = th*CurrentFrame.mvScaleFactors[nPredictedLevel];
 
                     const vector<size_t> vIndices2 = CurrentFrame.GetFeaturesInArea(uv(0), uv(1), radius, nPredictedLevel-1, nPredictedLevel+1);
-                    cout << "you are here 999_01005" << endl;
                     if(vIndices2.empty())
                         continue;
 
@@ -1945,7 +1940,6 @@ namespace ORB_SLAM3
 
                     int bestDist = 256;
                     int bestIdx2 = -1;
-                    cout << "you are here 999_01006" << endl;
                     for(vector<size_t>::const_iterator vit=vIndices2.begin(); vit!=vIndices2.end(); vit++)
                     {
                         const size_t i2 = *vit;
@@ -1962,15 +1956,17 @@ namespace ORB_SLAM3
                             bestIdx2=i2;
                         }
                     }
-                    cout << "you are here 999_01007" << endl;  
+                    cout << endl <<"you are here ORBmatcher 999_01007" << endl;  
                     if(bestDist<=ORBdist)
                     {
+                        cout << "OrbMatcher line 1962: mvpMapPoints " << CurrentFrame.mvpMapPoints.size() << "   entry0 " << sizeof(CurrentFrame.mvpMapPoints[0]) << "   index " << bestIdx2 <<endl;
                         CurrentFrame.mvpMapPoints[bestIdx2]=pMP;
                         nmatches++;
+                        cout << " 1";
 
                         if(mbCheckOrientation)
                         {
-                            cout << "you are here 999_010071" << endl;
+                            cout << endl << "you are here ORBmatcher 999_01008";
                             float rot = pKF->mvKeysUn[i].angle-CurrentFrame.mvKeysUn[bestIdx2].angle;
                             if(rot<0.0)
                                 rot+=360.0f;
@@ -1979,9 +1975,10 @@ namespace ORB_SLAM3
                                 bin=0;
                             assert(bin>=0 && bin<HISTO_LENGTH);
                             rotHist[bin].push_back(bestIdx2);
+                            cout << " 3" ;
                         }
+                        cout << " 2";
                     }
-
                 }
             }
         }

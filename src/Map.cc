@@ -358,6 +358,7 @@ void Map::SetLastMapChange(int currentChangeId)
 
 void Map::PreSave(std::set<GeometricCamera*> &spCams)
 {
+    cout << endl <<"you are here Map.cc, 0001" << endl;  
     int nMPWithoutObs = 0;
     for(MapPoint* pMPi : mspMapPoints)
     {
@@ -396,6 +397,7 @@ void Map::PreSave(std::set<GeometricCamera*> &spCams)
             continue;
 
         mvpBackupMapPoints.push_back(pMPi);
+        cout << endl <<"you are here Map.cc, 0002" << endl;  
         pMPi->PreSave(mspKeyFrames,mspMapPoints);
     }
 
@@ -407,6 +409,7 @@ void Map::PreSave(std::set<GeometricCamera*> &spCams)
             continue;
 
         mvpBackupKeyFrames.push_back(pKFi);
+        cout << endl <<"you are here Map.cc, 0003" << endl;  
         pKFi->PreSave(mspKeyFrames,mspMapPoints, spCams);
     }
 

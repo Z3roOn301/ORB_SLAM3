@@ -119,7 +119,6 @@ GeometricCamera* Atlas::AddCamera(GeometricCamera* pCam)
     cout << "you are here: Atlas 3100" << endl;
     int index_cam = -1;
     cout << "you are here: Atlas 3200" << endl;
-    cout << mvpCameras.size() << endl;
     for(size_t i=0; i < mvpCameras.size(); ++i)
     {
         GeometricCamera* pCam_i = mvpCameras[i];

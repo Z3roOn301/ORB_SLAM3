@@ -79,7 +79,6 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     if(!node.empty() && node.isString() && node.string() == "1.0"){
         settings_ = new Settings(strSettingsFile,mSensor);
 
-        cout << "you are here: System 0000" << endl;
 
         mStrLoadAtlasFromFile = settings_->atlasLoadFile();
         mStrSaveAtlasToFile = settings_->atlasSaveFile();
@@ -91,14 +90,12 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
         cv::FileNode node = fsSettings["System.LoadAtlasFromFile"];
         if(!node.empty() && node.isString())
         {
-            cout << "you are here: System 1000" << endl;
             mStrLoadAtlasFromFile = (string)node;
         }
 
         node = fsSettings["System.SaveAtlasToFile"];
         if(!node.empty() && node.isString())
         {
-            cout << "you are here: System 2000" << endl;
             mStrSaveAtlasToFile = (string)node;
         }
     }
@@ -107,7 +104,6 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     bool activeLC = true;
     if(!node.empty())
     {
-        cout << "you are here: System 3000" << endl;
         activeLC = static_cast<int>(fsSettings["loopClosing"]) != 0;
     }
 
@@ -117,7 +113,6 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
 
     if(mStrLoadAtlasFromFile.empty())
     {
-        cout << "you are here: System 4000" << endl;
         //Load ORB Vocabulary
         cout << endl << "Loading ORB Vocabulary. This could take a while..." << endl;
 
@@ -160,7 +155,6 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
 
         // Load the file with an earlier session
         //clock_t start = clock();
-        cout << "you are here: System 5000" << endl;
         cout << "Initialization of Atlas from file: " << mStrLoadAtlasFromFile << endl;
         bool isRead = LoadAtlas(FileType::BINARY_FILE);
         if(!isRead)
@@ -172,7 +166,6 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
 
 
         //cout << "KF in DB: " << mpKeyFrameDatabase->mnNumKFs << "; words: " << mpKeyFrameDatabase->mnNumWords << endl;
-        cout << "you are here: System 5001" << endl;
         loadedAtlas = true;
 
         mpAtlas->CreateNewMap();
@@ -184,9 +177,7 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
         //usleep(10*1000*1000);
     }
 
-    cout << "you are here: System 5002" << endl;
     if (mSensor==IMU_STEREO || mSensor==IMU_MONOCULAR || mSensor==IMU_RGBD){
-        cout << "you are here: System 5003" << endl;
         mpAtlas->SetInertialSensor();
     }
 
@@ -194,20 +185,17 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     mpFrameDrawer = new FrameDrawer(mpAtlas);
     mpMapDrawer = new MapDrawer(mpAtlas, strSettingsFile, settings_);
 
-    cout << "you are here: System 5004" << endl;
     //Initialize the Tracking thread
     //(it will live in the main thread of execution, the one that called this constructor)
     cout << "Seq. Name: " << strSequence << endl;
     mpTracker = new Tracking(this, mpVocabulary, mpFrameDrawer, mpMapDrawer,
                              mpAtlas, mpKeyFrameDatabase, strSettingsFile, mSensor, settings_, strSequence);
 
-    cout << "you are here: System 5005" << endl;
     //Initialize the Local Mapping thread and launch
     mpLocalMapper = new LocalMapping(this, mpAtlas, mSensor==MONOCULAR || mSensor==IMU_MONOCULAR,
                                      mSensor==IMU_MONOCULAR || mSensor==IMU_STEREO || mSensor==IMU_RGBD, strSequence);
     mptLocalMapping = new thread(&ORB_SLAM3::LocalMapping::Run,mpLocalMapper);
     mpLocalMapper->mInitFr = initFr;
-    cout << "you are here: System 5006" << endl;
     if(settings_)
         mpLocalMapper->mThFarPoints = settings_->thFarPoints();
     else
@@ -220,7 +208,6 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     else
         mpLocalMapper->mbFarPoints = false;
 
-    cout << "you are here: System 5007" << endl;
     //Initialize the Loop Closing thread and launch
     // mSensor!=MONOCULAR && mSensor!=IMU_MONOCULAR
     mpLoopCloser = new LoopClosing(mpAtlas, mpKeyFrameDatabase, mpVocabulary, mSensor!=MONOCULAR, activeLC, settings_); // mSensor!=MONOCULAR);
@@ -237,7 +224,6 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     mpLoopCloser->SetLocalMapper(mpLocalMapper);
 
     //usleep(10*1000*1000);
-    cout << "you are here: System 5008" << endl;
     //Initialize the Viewer thread and launch
     if(bUseViewer)
     //if(false) // TODO
@@ -247,7 +233,6 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
         mpTracker->SetViewer(mpViewer);
         mpLoopCloser->mpViewer = mpViewer;
         mpViewer->both = mpFrameDrawer->both;
-        cout << "you are here: System 5009" << endl;
     }
 
     // Fix verbosity
@@ -257,17 +242,14 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
 
 Sophus::SE3f System::TrackStereo(const cv::Mat &imLeft, const cv::Mat &imRight, const double &timestamp, const vector<IMU::Point>& vImuMeas, string filename)
 {
-    cout << "you are here: System 9100" << endl;
     if(mSensor!=STEREO && mSensor!=IMU_STEREO)
     {
         cerr << "ERROR: you called TrackStereo but input sensor was not set to Stereo nor Stereo-Inertial." << endl;
         exit(-1);
     }
 
-    cout << "you are here: System 9100" << endl;
     cv::Mat imLeftToFeed, imRightToFeed;
     if(settings_ && settings_->needToRectify()){
-            cout << "you are here: System 9100" << endl;
         cv::Mat M1l = settings_->M1l();
         cv::Mat M2l = settings_->M2l();
         cv::Mat M1r = settings_->M1r();
@@ -277,16 +259,13 @@ Sophus::SE3f System::TrackStereo(const cv::Mat &imLeft, const cv::Mat &imRight, 
         cv::remap(imRight, imRightToFeed, M1r, M2r, cv::INTER_LINEAR);
     }
     else if(settings_ && settings_->needToResize()){
-        cout << "you are here: System 9101" << endl;
         cv::resize(imLeft,imLeftToFeed,settings_->newImSize());
         cv::resize(imRight,imRightToFeed,settings_->newImSize());
     }
     else{
-            cout << "you are here: System 9102" << endl;
         imLeftToFeed = imLeft.clone();
         imRightToFeed = imRight.clone();
     }
-    cout << "you are here: System 9103" << endl;
 
 
     // Check mode change
@@ -312,7 +291,6 @@ Sophus::SE3f System::TrackStereo(const cv::Mat &imLeft, const cv::Mat &imRight, 
             mbDeactivateLocalizationMode = false;
         }
     }
-    cout << "you are here: System 9104" << endl;
     // Check reset
     {
         unique_lock<mutex> lock(mMutexReset);
@@ -328,22 +306,16 @@ Sophus::SE3f System::TrackStereo(const cv::Mat &imLeft, const cv::Mat &imRight, 
             mbResetActiveMap = false;
         }
     }
-    cout << "you are here: System 9105" << endl;
     if (mSensor == System::IMU_STEREO)
         for(size_t i_imu = 0; i_imu < vImuMeas.size(); i_imu++)
             mpTracker->GrabImuData(vImuMeas[i_imu]);
     Sophus::SE3f Tcw = mpTracker->GrabImageStereo(imLeftToFeed,imRightToFeed,timestamp,filename);
 
-    cout << "you are here: System 9106" << endl;
     // std::cout << "out grabber" << std::endl;
     unique_lock<mutex> lock2(mMutexState);
-    cout << "you are here: System 9107" << endl;
     mTrackingState = mpTracker->mState;
-    cout << "you are here: System 9108" << endl;
     mTrackedMapPoints = mpTracker->mCurrentFrame.mvpMapPoints;
-    cout << "you are here: System 9109" << endl;
     mTrackedKeyPointsUn = mpTracker->mCurrentFrame.mvKeysUn;
-    cout << "you are here: System 9110" << endl;
     return Tcw;
 }
 

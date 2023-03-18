@@ -62,7 +62,7 @@ int main(int argc, char **argv)
     vstrImageRight.resize(num_seq);
     vTimestampsCam.resize(num_seq);
     nImages.resize(num_seq);
-
+    
     cout << "you are here: stereo_VRTM 1001" << endl;
 
     int tot_images = 0;
