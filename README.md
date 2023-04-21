@@ -233,3 +233,16 @@ A flag in `include\Config.h` activates time measurements. It is necessary to unc
 
 # 9. Calibration
 You can find a tutorial for visual-inertial calibration and a detailed description of the contents of valid configuration files at  `Calibration_Tutorial.pdf`
+
+
+# 10. Our Prompts
+Execute Stereo
+sudo ./VRTM/stereo_VRTM ./Vocabulary/ORBvoc.txt ./VRTM/OV2640-160_stereo_vga_fish.yaml ~/Datasets/VRTM/capture_stereo6 ./VRTM/VRTM_TimeStamps/capture_600_sparse.txt dataset-MH01_ste
+
+Execute Mono
+sudo ./VRTM/mono_VRTM ./Vocabulary/ORBvoc.txt ./VRTM/OV2640-200_cam1_vga_fish.yaml ~/Datasets/VRTM/capture_mono_200_2 ./VRTM/VRTM_TimeStamps/capture_2200.txt dataset-MH01_ste
+
+Execute Mono Inertial
+./Examples/Monocular-Inertial/mono_inertial_euroc ./Vocabulary/ORBvoc.txt ./VRTM/OV2640-200_cam1_vga_inertial.yaml ~/Datasets/kalibr/set1/ ~/Datasets/kalibr/set1/mav0/cam0/times.txt dataset-MH01_monoi
+
+
