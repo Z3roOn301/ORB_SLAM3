@@ -1,58 +1,18 @@
 #include "WebSocketClientUtil.h"
-#include <boost/beast/core.hpp>
-#include <boost/beast/websocket.hpp>
-#include <boost/asio/ip/tcp.hpp>
-#include <boost/asio/connect.hpp>
-#include <boost/asio/ip/host_name.hpp>
 #include <opencv2/opencv.hpp>
-#include <fstream>
 #include <iostream>
-#include <thread>
 
-namespace beast = boost::beast;
-namespace http = beast::http;
-namespace websocket = beast::websocket;
-namespace net = boost::asio;
-using tcp = net::ip::tcp;
-
-struct ImuData {
-    long long timestamp;
-    float ax, ay, az, gx, gy, gz;
-};
+cv::Mat img;
 
 int main() {
-    std::ofstream imudatafile("IMUdata.csv");
-    imudatafile << "#timestamp [ns],w_RS_S_x [rad s^-1],w_RS_S_y [rad s^-1],w_RS_S_z [rad s^-1],a_RS_S_x [m s^-2],a_RS_S_y [m s^-2],a_RS_S_z [m s^-2]\n";
-    std::ofstream imgdatafile("IMGdata.csv");
-    imgdatafile << "#timestamp [ns],filename\n";
-    long long lasttimestamp = 0;
-
     WebSocketClientUtil ws("192.168.4.11", "8000");
-    //std::thread client_thread(&WebSocketClientUtil::run, &ws);
 
     while (true) {
         try {
-            std::string message = ws.read();
-            if (message.empty()) {
-                continue;
+            if (ws.readImg(img) == 1) {
+                cv::imshow("Image", img);
             }
 
-            std::vector<uchar> data(message.begin(), message.end());
-
-            if (data.size() > 2000) {
-                cv::Mat img = cv::imdecode(data, cv::IMREAD_GRAYSCALE);
-                cv::imshow("Stream", img);
-                cv::imwrite("imucapture/" + std::to_string(lasttimestamp) + ".jpg", img);
-            } else{
-                for (int i = 0; i < data.size(); i += sizeof(ImuData)) {
-                    ImuData imuData;
-                    memcpy(&imuData, &data[i], sizeof(ImuData));
-                    std::cout << imuData.timestamp << " " << imuData.ax << " " << imuData.ay << " " << imuData.az << " " << imuData.gx << " " << imuData.gy << " " << imuData.gz << std::endl;
-                    lasttimestamp = imuData.timestamp * 1000;
-                    imudatafile << lasttimestamp << "," << imuData.gx << "," << imuData.gy << "," << imuData.gz << "," << imuData.ax << "," << imuData.ay << "," << imuData.az << "\n";
-                }
-                imgdatafile << lasttimestamp << "," << lasttimestamp << ".jpg\n";
-            }
             // Check if the 'q' key was pressed
             if (cv::waitKey(1) == 'q') {
                 break;
@@ -62,6 +22,5 @@ int main() {
             std::cerr << "Error: " << e.what() << std::endl;
         }
     }
-    //client_thread.join();
     return 0;
 }

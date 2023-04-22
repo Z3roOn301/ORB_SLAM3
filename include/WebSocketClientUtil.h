@@ -6,6 +6,7 @@
 #include <boost/asio/ip/tcp.hpp>
 #include <memory>
 #include <string>
+#include <opencv2/opencv.hpp>
 
 namespace beast = boost::beast;
 namespace http = beast::http;
@@ -20,6 +21,13 @@ public:
     void run();
     int send(const std::string& message);
     std::string read();
+    struct ImuData {
+        long long timestamp;
+        float ax, ay, az, gx, gy, gz;
+    };
+    // ImuData readImuData();
+    int readImuData(std::vector<ImuData>& imuData);
+    int readImg(cv::Mat& img);
 
 private:
     net::io_context io_context_;

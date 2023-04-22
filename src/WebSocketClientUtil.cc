@@ -3,6 +3,7 @@
 #include <boost/asio.hpp>
 #include <boost/beast.hpp>
 #include <memory>
+#include <opencv2/opencv.hpp>
 
 namespace beast = boost::beast;
 namespace http = beast::http;
@@ -65,4 +66,46 @@ std::string WebSocketClientUtil::read() {
     boost::beast::flat_buffer buffer;
     ws_->read(buffer);
     return boost::beast::buffers_to_string(buffer.data());
+}
+
+// Read IMU data from the server
+int WebSocketClientUtil::readImuData(std::vector<WebSocketClientUtil::ImuData> &imuData) {
+    imuData.clear();
+    if (!ws_ || !ws_->is_open()) {
+        return 0;
+    }
+    std::string message = read();
+    if (message.empty()) {
+        return 0;
+    }
+
+    std::vector<uchar> data(message.begin(), message.end());
+
+    if (data.size() <= 2000) {
+        for (int i = 0; i < data.size(); i += sizeof(WebSocketClientUtil::ImuData)) {
+            WebSocketClientUtil::ImuData imu;
+            memcpy(&imu, &data[i], sizeof(WebSocketClientUtil::ImuData));
+            imuData.push_back(imu);
+        }
+        return 1;
+    }
+    return 0;
+}
+
+//Read image from the server
+int WebSocketClientUtil::readImg(cv::Mat &img) {
+    if (!ws_ || !ws_->is_open()) {
+        return 0;
+    }
+    std::string message = read();
+    if (message.empty()) {
+        return 0;
+    }
+
+    std::vector<uchar> data(message.begin(), message.end());
+    if (data.size() > 2000) {
+        img = cv::imdecode(data, cv::IMREAD_COLOR);
+        return 1;
+    }
+    return 0;
 }
