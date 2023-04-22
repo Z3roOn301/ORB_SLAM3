@@ -1,88 +1,70 @@
-// #include <iostream>
-// #include <boost/asio.hpp>
-// #include <boost/beast.hpp>
-
-// using tcp = boost::asio::ip::tcp;
-// namespace websocket = boost::beast::websocket;
-
-// template<class NextLayer>
-// void setup_stream(websocket::stream<NextLayer>& ws)
-// {
-//     // These values are tuned for Autobahn|Testsuite, and
-//     // should also be generally helpful for increased performance.
-//     websocket::permessage_deflate pmd;
-//     pmd.client_enable = true;
-//     pmd.server_enable = true;
-//     pmd.compLevel = 3;
-//     ws.set_option(pmd);
-//     ws.auto_fragment(false);
-
-//     // Autobahn|Testsuite needs this
-//     ws.read_message_max(64 * 1024 * 1024);
-// }
-
-// int main()
-// {
-//     boost::asio::io_context io_context;
-//     tcp::endpoint endpoint{tcp::v4(), 8080};
-//     tcp::acceptor acceptor{io_context, endpoint};
-//     boost::beast::error_code ec;
-
-//     while (true) {
-//         std::cout << "Starting..." << std::endl;
-//         tcp::socket socket{io_context};
-//         acceptor.accept(socket);
-//         std::cout << "Started" << std::endl;
-
-//         try {
-//             websocket::stream<tcp::socket> ws{std::move(socket)};
-//             // setup_stream(ws);
-//             ws.accept();
-//             std::cout << "accepted" << std::endl;
-
-//             while (true) {
-//                 boost::beast::flat_buffer buffer;
-//                 boost::beast::flat_buffer b;
-//                 boost::beast::ostream(b) << "Hello, world!\n";
-//                 ws.write(b.data(), ec);
-//                 sleep(1);
-//                 // ws.read(buffer, ec);
-//                 if(ec == websocket::error::closed)
-//                     break;
-//                 if(ec){
-//                     std::cout << "Error " << ec << std::endl;
-//                     break;
-//                 }
-//                 // if(!ec){
-//                 //     std::cout << "read stuff" << std::endl;
-//                 // ws.text(ws.got_text());
-//                 // ws.write(buffer.data(), ec);
-//                 // }
-//             }
-//         }
-//         catch (const std::exception& ex) {
-//             std::cerr << "Exception: " << ex.what() << std::endl;
-//         }
-//     }
-
-//     return 0;
-// }
+#include "WebSocketClientUtil.h"
+#include <boost/beast/core.hpp>
+#include <boost/beast/websocket.hpp>
+#include <boost/asio/ip/tcp.hpp>
+#include <boost/asio/connect.hpp>
+#include <boost/asio/ip/host_name.hpp>
+#include <opencv2/opencv.hpp>
+#include <fstream>
 #include <iostream>
 #include <thread>
-#include "WebSocketUtil.h"
-#include <boost/asio.hpp>
-#include <boost/beast.hpp>
-int main()
-{
-    WebSocketUtil server(8080);
-    std::thread server_thread(&WebSocketUtil::run, &server);
 
-    while (1)
-    {
-        server.send("Hello, world!\n");
-        sleep(1);
+namespace beast = boost::beast;
+namespace http = beast::http;
+namespace websocket = beast::websocket;
+namespace net = boost::asio;
+using tcp = net::ip::tcp;
+
+int main() {
+    std::ofstream imudatafile("IMUdata.csv");
+    imudatafile << "#timestamp [ns],w_RS_S_x [rad s^-1],w_RS_S_y [rad s^-1],w_RS_S_z [rad s^-1],a_RS_S_x [m s^-2],a_RS_S_y [m s^-2],a_RS_S_z [m s^-2]\n";
+    std::ofstream imgdatafile("IMGdata.csv");
+    imgdatafile << "#timestamp [ns],filename\n";
+    long long lasttimestamp = 0;
+
+    WebSocketClientUtil ws("192.168.4.11", "8000");
+    // std::thread client_thread(&WebSocketClientUtil::run, &ws);
+
+    while (true) {
+        try {
+            std::string message = ws.read();
+            if (message.empty()) {
+                continue;
+            }
+
+            std::vector<uchar> data(message.begin(), message.end());
+
+            if (data.size() > 2000) {
+                cv::Mat img = cv::imdecode(data, cv::IMREAD_GRAYSCALE);
+                cv::imshow("Stream", img);
+                cv::imwrite("imucapture/" + std::to_string(lasttimestamp) + ".jpg", img);
+            } else {
+                for (int i = 0; i < data.size(); i += 32) {
+                    long long timestamp;
+                    float ax, ay, az, gx, gy, gz;
+                    memcpy(&timestamp, &data[i], 8);
+                    memcpy(&ax, &data[i + 8], 4);
+                    memcpy(&ay, &data[i + 12], 4);
+                    memcpy(&az, &data[i + 16], 4);
+                    memcpy(&gx, &data[i + 20], 4);
+                    memcpy(&gy, &data[i + 24], 4);
+                    memcpy(&gz, &data[i + 28], 4);
+
+                    std::cout << timestamp << " " << ax << " " << ay << " " << az << " " << gx << " " << gy << " " << gz << std::endl;
+                    lasttimestamp = timestamp * 1000;
+                    imudatafile << lasttimestamp << "," << gx << "," << gy << "," << gz << "," << ax << "," << ay << "," << az << "\n";
+                }
+                imgdatafile << lasttimestamp << "," << lasttimestamp << ".jpg\n";
+            } 
+            // Check if the 'q' key was pressed
+            if (cv::waitKey(1) == 'q') {
+                break;
+            }
+        }
+        catch (std::exception const& e) {
+            std::cerr << "Error: " << e.what() << std::endl;
+        }
     }
-    
-    server_thread.join();
+    // client_thread.join();
     return 0;
 }

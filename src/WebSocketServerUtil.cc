@@ -1,16 +1,16 @@
-#include "WebSocketUtil.h"
+#include "WebSocketServerUtil.h"
 #include <iostream>
 #include <boost/asio.hpp>
 #include <boost/beast.hpp>
 #include <memory>
 
 // Constructor
-WebSocketUtil::WebSocketUtil(unsigned short port)
+WebSocketServerUtil::WebSocketServerUtil(unsigned short port)
     : io_context_{}, acceptor_{io_context_, tcp::endpoint{tcp::v4(), port}}
 {}
 
 // Run the server
-void WebSocketUtil::run() {
+void WebSocketServerUtil::run() {
     // Accept incoming connections
     while (true) {
         try {
@@ -43,7 +43,7 @@ void WebSocketUtil::run() {
 
 
 // Send a message to the client
-int WebSocketUtil::send(const std::string& message) {
+int WebSocketServerUtil::send(const std::string& message) {
     if (!ws_ || !ws_->is_open()) {
         return 0;
     }
@@ -53,4 +53,15 @@ int WebSocketUtil::send(const std::string& message) {
     ws_->write(buffer.data());
 
     return 1;
+}
+
+// Read a message from the client
+std::string WebSocketServerUtil::read() {
+    if (!ws_ || !ws_->is_open()) {
+        return "";
+    }
+
+    boost::beast::flat_buffer buffer;
+    ws_->read(buffer);
+    return boost::beast::buffers_to_string(buffer.data());
 }

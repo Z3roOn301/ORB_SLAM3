@@ -8,11 +8,12 @@
 using tcp = boost::asio::ip::tcp;
 namespace websocket = boost::beast::websocket;
 
-class WebSocketUtil {
+class WebSocketServerUtil {
 public:
-    WebSocketUtil(unsigned short port);
+    WebSocketServerUtil(unsigned short port);
     void run();
     int send(const std::string& message);
+    std::string read();
 
 private:
     boost::asio::io_context io_context_;
