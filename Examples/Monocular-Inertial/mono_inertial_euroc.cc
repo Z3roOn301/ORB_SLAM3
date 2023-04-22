@@ -181,7 +181,7 @@ int main(int argc, char *argv[])
                                                              vGyro[seq][first_imu[seq]].x,vGyro[seq][first_imu[seq]].y,vGyro[seq][first_imu[seq]].z,
                                                              vTimestampsImu[seq][first_imu[seq]]));
                     first_imu[seq]++;
-                }
+                }  
             }
 
     #ifdef COMPILEDWITHC11
@@ -264,7 +264,8 @@ void LoadImages(const string &strImagePath, const string &strPathTimes,
         {
             stringstream ss;
             ss << s;
-            vstrImages.push_back(strImagePath + "/" + ss.str() + ".png");
+            // vstrImages.push_back(strImagePath + "/" + ss.str() + ".png");
+            vstrImages.push_back(strImagePath + "/" + ss.str() + ".jpg");
             double t;
             ss >> t;
             vTimeStamps.push_back(t/1e9);

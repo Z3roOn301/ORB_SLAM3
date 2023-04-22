@@ -82,6 +82,7 @@ src/GeometricTools.cc
 src/TwoViewReconstruction.cc
 src/Config.cc
 src/Settings.cc
+src/WebSocketUtil.cc
 include/System.h
 include/Tracking.h
 include/LocalMapping.h
@@ -111,7 +112,8 @@ include/GeometricTools.h
 include/TwoViewReconstruction.h
 include/SerializationUtils.h
 include/Config.h
-include/Settings.h)
+include/Settings.h
+include/WebSocketUtil.h)
 
 add_subdirectory(Thirdparty/g2o)
 
@@ -204,6 +206,10 @@ target_link_libraries(stereo_VRTM ${PROJECT_NAME})
 add_executable(stereo_VRTM_live
         VRTM/stereo_VRTM_live.cc)
 target_link_libraries(stereo_VRTM_live ${PROJECT_NAME})
+
+add_executable(websocket
+        VRTM/websocket.cc)
+target_link_libraries(websocket ${PROJECT_NAME})
 
 #Monocular examples
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/Monocular)
