@@ -15,6 +15,11 @@ namespace websocket = beast::websocket;
 namespace net = boost::asio;
 using tcp = net::ip::tcp;
 
+struct ImuData {
+    long long timestamp;
+    float ax, ay, az, gx, gy, gz;
+};
+
 int main() {
     std::ofstream imudatafile("IMUdata.csv");
     imudatafile << "#timestamp [ns],w_RS_S_x [rad s^-1],w_RS_S_y [rad s^-1],w_RS_S_z [rad s^-1],a_RS_S_x [m s^-2],a_RS_S_y [m s^-2],a_RS_S_z [m s^-2]\n";
@@ -23,7 +28,7 @@ int main() {
     long long lasttimestamp = 0;
 
     WebSocketClientUtil ws("192.168.4.11", "8000");
-    // std::thread client_thread(&WebSocketClientUtil::run, &ws);
+    //std::thread client_thread(&WebSocketClientUtil::run, &ws);
 
     while (true) {
         try {
@@ -38,24 +43,16 @@ int main() {
                 cv::Mat img = cv::imdecode(data, cv::IMREAD_GRAYSCALE);
                 cv::imshow("Stream", img);
                 cv::imwrite("imucapture/" + std::to_string(lasttimestamp) + ".jpg", img);
-            } else {
-                for (int i = 0; i < data.size(); i += 32) {
-                    long long timestamp;
-                    float ax, ay, az, gx, gy, gz;
-                    memcpy(&timestamp, &data[i], 8);
-                    memcpy(&ax, &data[i + 8], 4);
-                    memcpy(&ay, &data[i + 12], 4);
-                    memcpy(&az, &data[i + 16], 4);
-                    memcpy(&gx, &data[i + 20], 4);
-                    memcpy(&gy, &data[i + 24], 4);
-                    memcpy(&gz, &data[i + 28], 4);
-
-                    std::cout << timestamp << " " << ax << " " << ay << " " << az << " " << gx << " " << gy << " " << gz << std::endl;
-                    lasttimestamp = timestamp * 1000;
-                    imudatafile << lasttimestamp << "," << gx << "," << gy << "," << gz << "," << ax << "," << ay << "," << az << "\n";
+            } else{
+                for (int i = 0; i < data.size(); i += sizeof(ImuData)) {
+                    ImuData imuData;
+                    memcpy(&imuData, &data[i], sizeof(ImuData));
+                    std::cout << imuData.timestamp << " " << imuData.ax << " " << imuData.ay << " " << imuData.az << " " << imuData.gx << " " << imuData.gy << " " << imuData.gz << std::endl;
+                    lasttimestamp = imuData.timestamp * 1000;
+                    imudatafile << lasttimestamp << "," << imuData.gx << "," << imuData.gy << "," << imuData.gz << "," << imuData.ax << "," << imuData.ay << "," << imuData.az << "\n";
                 }
                 imgdatafile << lasttimestamp << "," << lasttimestamp << ".jpg\n";
-            } 
+            }
             // Check if the 'q' key was pressed
             if (cv::waitKey(1) == 'q') {
                 break;
@@ -65,6 +62,6 @@ int main() {
             std::cerr << "Error: " << e.what() << std::endl;
         }
     }
-    // client_thread.join();
+    //client_thread.join();
     return 0;
 }
