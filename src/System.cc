@@ -32,7 +32,8 @@
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/archive/xml_iarchive.hpp>
 #include <boost/archive/xml_oarchive.hpp>
-
+#include <opencv2/opencv.hpp>
+using namespace cv;
 
 namespace ORB_SLAM3
 {
@@ -393,6 +394,7 @@ Sophus::SE3f System::TrackRGBD(const cv::Mat &im, const cv::Mat &depthmap, const
 Sophus::SE3f System::TrackMonocular(const cv::Mat &im, const double &timestamp, const vector<IMU::Point>& vImuMeas, string filename)
 {
 
+
     {
         unique_lock<mutex> lock(mMutexReset);
         if(mbShutDown)
@@ -406,6 +408,7 @@ Sophus::SE3f System::TrackMonocular(const cv::Mat &im, const double &timestamp, 
     }
 
     cv::Mat imToFeed = im.clone();
+
     if(settings_ && settings_->needToResize()){
         cv::Mat resizedIm;
         cv::resize(im,resizedIm,settings_->newImSize());
@@ -453,6 +456,7 @@ Sophus::SE3f System::TrackMonocular(const cv::Mat &im, const double &timestamp, 
         }
     }
 
+    // cv::imshow("Image_trackmonocular", imToFeed);
     if (mSensor == System::IMU_MONOCULAR)
         for(size_t i_imu = 0; i_imu < vImuMeas.size(); i_imu++)
             mpTracker->GrabImuData(vImuMeas[i_imu]);

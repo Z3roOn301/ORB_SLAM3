@@ -104,7 +104,7 @@ int WebSocketClientUtil::readImg(cv::Mat &img) {
 
     std::vector<uchar> data(message.begin(), message.end());
     if (data.size() > 2000) {
-        img = cv::imdecode(data, cv::IMREAD_COLOR);
+        img = cv::imdecode(data, cv::IMREAD_GRAYSCALE);
         return 1;
     }
     return 0;

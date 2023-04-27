@@ -15,7 +15,11 @@ using namespace cv;
 using namespace std;
 
 bool b_continue_session;
+
+//variable which saves the image
 cv::Mat img;
+//variable which saves the imudata
+std::string imudata;
 
 void exit_loop_handler(int s){
    cout << "Finishing session" << endl;
@@ -69,6 +73,9 @@ int main(int argc, char **argv)
 
 while (b_continue_session)
     {
+    if (ws.readImuData(imudata) == 1){
+        cout << "ImuData: " << imudata << endl;
+    }
     if (ws.readImg(img) == 1) {
         timestamp = timestamp + 1;
         Sophus::SE3f Pose = SLAM.TrackMonocular(img, (double)timestamp);

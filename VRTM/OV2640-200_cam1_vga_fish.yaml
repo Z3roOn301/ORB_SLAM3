@@ -37,7 +37,7 @@ Camera.newHeight: 480
 Camera.newWidth: 640
 
 # Camera frames per second 
-Camera.fps: 5
+Camera.fps: 20
 
 # Color order of the images (0: BGR, 1: RGB. It is ignored if images are grayscale)
 Camera.RGB: 0
@@ -74,12 +74,6 @@ Tracking.fMLPnPSolverProbability: 0.999 #0.99
 
 #RANSAC?
 # Percentage
-
-Camera1.overlappingBegin: 0
-Camera1.overlappingEnd: 639
-
-Camera2.overlappingBegin: 0
-Camera2.overlappingEnd: 639
 
 
 # ORB Extractor: Fast threshold

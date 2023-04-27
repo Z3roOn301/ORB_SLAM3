@@ -33,7 +33,8 @@
 
 #include <mutex>
 #include <chrono>
-
+#include <opencv2/opencv.hpp>
+using namespace cv;
 
 using namespace std;
 
@@ -1566,6 +1567,7 @@ Sophus::SE3f Tracking::GrabImageRGBD(const cv::Mat &imRGB,const cv::Mat &imD, co
 Sophus::SE3f Tracking::GrabImageMonocular(const cv::Mat &im, const double &timestamp, string filename)
 {
     mImGray = im;
+    // cv::imshow("GrabImageMonocular", im);
     if(mImGray.channels()==3)
     {
         if(mbRGB)
