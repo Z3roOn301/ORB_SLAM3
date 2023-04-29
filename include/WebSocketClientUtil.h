@@ -21,10 +21,13 @@ public:
     void run();
     int send(const std::string& message);
     std::string read();
+    #pragma pack(4)
     struct ImuData {
-        long long timestamp;
+        uint32_t timestamp;
+        float heading;
         float ax, ay, az, gx, gy, gz;
     };
+    #pragma pack(0)
     // ImuData readImuData();
     int readImuData(std::vector<ImuData>& imuData);
     int readImg(cv::Mat& img);

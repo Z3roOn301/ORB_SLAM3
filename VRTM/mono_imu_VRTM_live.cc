@@ -81,13 +81,13 @@ while (b_continue_session)
     for(int i=0; i<imudata.size(); ++i)
     {
         ORB_SLAM3::IMU::Point lastPoint(imudata[i].ax, imudata[i].ay, imudata[i].az, 
-                                imudata[i].gx, imudata[i].gy, imudata[i].gz, imudata[i].timestamp);
+                                imudata[i].gx, imudata[i].gy, imudata[i].gz, imudata[i].timestamp*1000);
         vImuMeas.push_back(lastPoint);
     }
-    timestamp = imudata[imudata.size()-1].timestamp;
+    timestamp = double(imudata[imudata.size()-1].timestamp*1000);
 
     Sophus::SE3f Pose = SLAM.TrackMonocular(img, timestamp, vImuMeas);
-    cout << "Timestamp: " <<timestamp << "    Angle X: "<< Pose.angleX() << "   Angle Y: "<<  Pose.angleY() <<  "   Angle Z: "<< Pose.angleZ() << endl;
+    cout << "Struct Size:"<< sizeof(WebSocketClientUtil::ImuData)<<"   Timestamp: " <<timestamp << "    Angle X: "<< Pose.angleX() << "   Angle Y: "<<  Pose.angleY() <<  "   Angle Z: "<< Pose.angleZ() << endl;
 
     vImuMeas.clear();
 }
