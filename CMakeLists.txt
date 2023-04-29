@@ -201,6 +201,10 @@ add_executable(mono_VRTM_live
         VRTM/mono_VRTM_live.cc)
 target_link_libraries(mono_VRTM_live ${PROJECT_NAME})
 
+add_executable(mono_imu_VRTM_live
+        VRTM/mono_imu_VRTM_live.cc)
+target_link_libraries(mono_imu_VRTM_live ${PROJECT_NAME})
+
 add_executable(stereo_VRTM
         VRTM/stereo_VRTM.cc)
 target_link_libraries(stereo_VRTM ${PROJECT_NAME})

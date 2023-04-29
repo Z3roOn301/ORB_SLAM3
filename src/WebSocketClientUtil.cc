@@ -96,7 +96,7 @@ int WebSocketClientUtil::readImuData(std::vector<WebSocketClientUtil::ImuData> &
 int WebSocketClientUtil::readImg(cv::Mat &img) {
     if (!ws_ || !ws_->is_open()) {
         return 0;
-    }
+    } 
     std::string message = read();
     if (message.empty()) {
         return 0;

@@ -19,7 +19,7 @@ bool b_continue_session;
 //variable which saves the image
 cv::Mat img;
 //variable which saves the imudata
-std::string imudata;
+std::vector<WebSocketClientUtil::ImuData> imudata;
 
 void exit_loop_handler(int s){
    cout << "Finishing session" << endl;
@@ -64,23 +64,32 @@ int main(int argc, char **argv)
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
     ORB_SLAM3::System SLAM(argv[1],argv[2],ORB_SLAM3::System::MONOCULAR , true, 0, file_name);
     float imageScale = SLAM.GetImageScale();
-    cout << "imageScale: " << imageScale << endl;
+    // cout << "imageScale: " << imageScale << endl;
 
     double t_resize = 0.f;
     double t_track = 0.f;
 
-    int timestamp = 0;
+    double timestamp = 0;
+
+    vector<ORB_SLAM3::IMU::Point> vImuMeas;
 
 while (b_continue_session)
     {
-    if (ws.readImuData(imudata) == 1){
-        cout << "ImuData: " << imudata << endl;
+    while (ws.readImuData(imudata) == 0) {}
+    while (ws.readImg(img) == 0) {}
+
+    for(int i=0; i<imudata.size(); ++i)
+    {
+        ORB_SLAM3::IMU::Point lastPoint(imudata[i].ax, imudata[i].ay, imudata[i].az, 
+                                imudata[i].gx, imudata[i].gy, imudata[i].gz, imudata[i].timestamp);
+        vImuMeas.push_back(lastPoint);
     }
-    if (ws.readImg(img) == 1) {
-        timestamp = timestamp + 1;
-        Sophus::SE3f Pose = SLAM.TrackMonocular(img, (double)timestamp);
-        cout << "Timestamp: " <<timestamp << "    Angle X: "<< Pose.angleX() << "   Angle Y: "<<  Pose.angleY() <<  "   Angle Z: "<< Pose.angleZ() << endl;
-    }
+    timestamp = imudata[imudata.size()-1].timestamp;
+
+    Sophus::SE3f Pose = SLAM.TrackMonocular(img, timestamp, vImuMeas);
+    cout << "Timestamp: " <<timestamp << "    Angle X: "<< Pose.angleX() << "   Angle Y: "<<  Pose.angleY() <<  "   Angle Z: "<< Pose.angleZ() << endl;
+
+    vImuMeas.clear();
 }
 
 // Stop all threads
