@@ -84,10 +84,11 @@ while (b_continue_session)
                                 imudata[i].gx, imudata[i].gy, imudata[i].gz, imudata[i].timestamp*1000);
         vImuMeas.push_back(lastPoint);
     }
+    
     timestamp = double(imudata[imudata.size()-1].timestamp*1000);
 
     Sophus::SE3f Pose = SLAM.TrackMonocular(img, timestamp, vImuMeas);
-    cout << "Struct Size:"<< sizeof(WebSocketClientUtil::ImuData)<<"   Timestamp: " <<timestamp << "    Angle X: "<< Pose.angleX() << "   Angle Y: "<<  Pose.angleY() <<  "   Angle Z: "<< Pose.angleZ() << endl;
+    cout << "   Timestamp: " <<timestamp << "    Angle X: "<< Pose.angleX() << "   Angle Y: "<<  Pose.angleY() <<  "   Angle Z: "<< Pose.angleZ() << endl;
 
     vImuMeas.clear();
 }

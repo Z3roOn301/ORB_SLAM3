@@ -186,6 +186,9 @@ public:
 
     float GetImageScale();
 
+    // Sophus::SE3f GetCurrentPose() const { return mpTracker->GetCurrentPose(); }
+
+
 #ifdef REGISTER_TIMES
     void InsertRectTime(double& time);
     void InsertResizeTime(double& time);

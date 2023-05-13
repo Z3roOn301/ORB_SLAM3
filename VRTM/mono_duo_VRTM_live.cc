@@ -12,6 +12,7 @@
 #include <WebSocketClientUtil.h>
 #include <WebSocketServerUtil.h>
 #include <thread>
+#include<execinfo.h>
 
 using namespace cv;
 using namespace std;
@@ -25,10 +26,23 @@ void exit_loop_handler(int s){
    b_continue_session = false;
 }
 
+void handler(int sig) {
+  void *array[10];
+  size_t size;
+
+  // get void*'s for all entries on the stack
+  size = backtrace(array, 10);
+
+  // print out all the frames to stderr
+  fprintf(stderr, "Error: signal %d:\n", sig);
+  backtrace_symbols_fd(array, size, STDERR_FILENO);
+  exit(1);
+}
+
 int main(int argc, char **argv)
 {
-
-    if(argc < 3 || argc > 4)
+    signal(SIGSEGV, handler);   // install our handler
+    if(argc < 3 || argc > 5)
     {
         cerr << endl << "Usage: ./stereo_realsense_t265 path_to_vocabulary path_to_settings (trajectory_file_name)" << endl;
         return 1;
@@ -44,6 +58,13 @@ int main(int argc, char **argv)
         bFileName = true;
     }
     
+    if (argc == 5)
+    {
+        file_name = string(argv[argc-2]);
+        file_name2 = string(argv[argc-1]);
+        bFileName = true;
+    }
+
     struct sigaction sigIntHandler;
 
     sigIntHandler.sa_handler = exit_loop_handler;
@@ -64,26 +85,31 @@ int main(int argc, char **argv)
 
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
     ORB_SLAM3::System SlamL(argv[1],argv[2],ORB_SLAM3::System::MONOCULAR , true, 0, file_name);
+    ORB_SLAM3::System SlamR(argv[1],argv[2],ORB_SLAM3::System::MONOCULAR , false, 0, file_name2);
 
     double t_resize = 0.f;
     double t_track = 0.f;
 
-    uint32_t timestamp = 0;
+    uint32_t timestampL = 0;
+    uint32_t timestampR = 0;
 
     while (b_continue_session)
         {
         while (ws.readImuData(imudata) == 0) {}
         while (ws.readImg(img) == 0) {}
-        timestamp = imudata[imudata.size()-1].timestamp;
-        Sophus::SE3f PoseL = SlamL.TrackMonocular(img, (double)timestamp);
-        cout << "Timestamp: " <<timestamp << "    Angle X: "<< PoseL.angleX() << "   Angle Y: "<<  PoseL.angleY() <<  "   Angle Z: "<< PoseL.angleZ() << endl;
+        timestampL = imudata[imudata.size()-1].timestamp;
+        timestampR = imudata[imudata.size()-1].timestamp; //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! RSO: This is a bug, timestampR should be the timestamp of the right camera
+        Sophus::SE3f PoseL = SlamL.TrackMonocular(img, (double)timestampL);
+        Sophus::SE3f PoseR = SlamR.TrackMonocular(img, (double)timestampR);
+        cout << "Timestamp: " <<timestampL << "    Angle X: "<< PoseL.angleX() << "   Angle Y: "<<  PoseL.angleY() <<  "   Angle Z: "<< PoseL.angleZ() << endl;
         
-        ws_server.send(std::to_string(timestamp)+ ";" + std::to_string(PoseL.angleX())+ ";"  + std::to_string(PoseL.angleY())+  ";" +std::to_string(PoseL.angleZ()));
+        ws_server.send(std::to_string(timestampL)+ ";" + std::to_string(PoseL.angleX())+ ";"  + std::to_string(PoseL.angleY())+  ";" +std::to_string(PoseL.angleZ()) + ";" +
+        std::to_string(timestampR)+ ";" +  std::to_string(PoseR.angleX()) +  ";" +std::to_string(PoseR.angleY())+ ";" + std::to_string(PoseR.angleZ()));
     }
 
 // Stop all threads
 SlamL.Shutdown();
-//SlamR.Shutdown();
+SlamR.Shutdown();
 t.join();
 return 0;
 
@@ -172,8 +198,8 @@ return 0;
 //     b_continue_session = true;
 //     double t_resize = 0.f;
 //     double t_track = 0.f;
-//     int timestamp = 0;
-//     int timestamp = 0;
+//     int timestampL = 0;
+//     int timestampR = 0;
 
     // // Main loop
     // int map_id = 0;
@@ -226,19 +252,19 @@ return 0;
     //     while (ws.readImuData(imudata) == 0) {}
     //     while (ws.readImg(img) == 0) {}
 
-    //     timestamp = double(imudata[imudata.size()-1].timestamp);
-    //     timestamp = timestamp;
+    //     timestampL = double(imudata[imudata.size()-1].timestamp);
+    //     timestampR = timestampL;
 
     //     // create threads for left and right ORB-SLAM systems
     //     std::thread t_L([&]{
-    //         Sophus::SE3f PoseL = SlamL.TrackMonocular(img, timestamp);
-    //         cout << "Timestamp: " << timestamp << "    Angle X: " << PoseL.angleX() << "   Angle Y: " <<  PoseL.angleY() <<  "   Angle Z: " << PoseL.angleZ() << endl;
-    //         ws_server.send(std::to_string(timestamp) + ";" + std::to_string(PoseL.angleX()) + ";"  + std::to_string(PoseL.angleY()) + ";" + std::to_string(PoseL.angleZ()));
+    //         Sophus::SE3f PoseL = SlamL.TrackMonocular(img, timestampL);
+    //         cout << "Timestamp: " << timestampL << "    Angle X: " << PoseL.angleX() << "   Angle Y: " <<  PoseL.angleY() <<  "   Angle Z: " << PoseL.angleZ() << endl;
+    //         ws_server.send(std::to_string(timestampL) + ";" + std::to_string(PoseL.angleX()) + ";"  + std::to_string(PoseL.angleY()) + ";" + std::to_string(PoseL.angleZ()));
     //     });
 
     //     std::thread t_R([&]{
-    //         Sophus::SE3f PoseR = SlamR.TrackMonocular(img, timestamp);
-    //         ws_server.send(std::to_string(timestamp) + ";" + std::to_string(PoseR.angleX()) + ";" + std::to_string(PoseR.angleY()) + ";" + std::to_string(PoseR.angleZ()));
+    //         Sophus::SE3f PoseR = SlamR.TrackMonocular(img, timestampR);
+    //         ws_server.send(std::to_string(timestampR) + ";" + std::to_string(PoseR.angleX()) + ";" + std::to_string(PoseR.angleY()) + ";" + std::to_string(PoseR.angleZ()));
     //     });
 
     //     // wait for both threads to finish
@@ -253,16 +279,16 @@ return 0;
     //     while (ws.readImuData(imudata) == 0) {}
     //     while (ws.readImg(img) == 0) {}
 
-    //     timestamp = double(imudata[imudata.size()-1].timestamp);
-    //     timestamp = timestamp;
+    //     timestampL = double(imudata[imudata.size()-1].timestamp);
+    //     timestampR = timestampL;
 
     //     // create threads for left and right ORB-SLAM systems
     //     std::thread t_L([&]{
-    //         Sophus::SE3f PoseL = SlamL.TrackMonocular(img, timestamp);
+    //         Sophus::SE3f PoseL = SlamL.TrackMonocular(img, timestampL);
     //     });
 
     //     std::thread t_R([&]{
-    //         Sophus::SE3f PoseR = SlamR.TrackMonocular(img, timestamp);
+    //         Sophus::SE3f PoseR = SlamR.TrackMonocular(img, timestampR);
     //     });
 
     //     // wait for both threads to finish
@@ -274,10 +300,10 @@ return 0;
     //     // Sophus::SE3f PoseR = SlamR.GetCurrentPose();
 
     //     // print and send pose information over websocket
-    //     cout << "Timestamp: " << timestamp << "    Angle X: " << PoseL.angleX() << "   Angle Y: " <<  PoseL.angleY() <<  "   Angle Z: " << PoseL.angleZ() << endl;
+    //     cout << "Timestamp: " << timestampL << "    Angle X: " << PoseL.angleX() << "   Angle Y: " <<  PoseL.angleY() <<  "   Angle Z: " << PoseL.angleZ() << endl;
 
-    //     ws_server.send(std::to_string(timestamp) + ";" + std::to_string(PoseL.angleX()) + ";"  + std::to_string(PoseL.angleY()) + ";" + std::to_string(PoseL.angleZ()) + ";" +
-    //     std::to_string(timestamp) + ";" + std::to_string(PoseR.angleX()) + ";" + std::to_string(PoseR.angleY()) + ";" + std::to_string(PoseR.angleZ()));
+    //     ws_server.send(std::to_string(timestampL) + ";" + std::to_string(PoseL.angleX()) + ";"  + std::to_string(PoseL.angleY()) + ";" + std::to_string(PoseL.angleZ()) + ";" +
+    //     std::to_string(timestampR) + ";" + std::to_string(PoseR.angleX()) + ";" + std::to_string(PoseR.angleY()) + ";" + std::to_string(PoseR.angleZ()));
     // }
 
 //     return 0;

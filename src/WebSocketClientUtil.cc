@@ -34,6 +34,7 @@ void WebSocketClientUtil::run() {
         try {
             sleep(1);
             if(!ws_->is_open()) {
+                std::cout << "Reconnecting..." << std::endl;
                 auto const results = resolver_.resolve(host_, port_);
                 net::connect(ws_->next_layer(), results.begin(), results.end());
                 ws_->handshake(host_, "/");
