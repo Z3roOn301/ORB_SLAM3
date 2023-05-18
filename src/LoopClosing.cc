@@ -207,6 +207,7 @@ void LoopClosing::Run()
 #endif
 
                         Verbose::PrintMess("Merge finished!", Verbose::VERBOSITY_QUIET);
+                        mpAtlas->validMap = true;
                     }
 
                     vdPR_CurrentTime.push_back(mpCurrentKF->mTimeStamp);
@@ -1277,8 +1278,8 @@ void LoopClosing::MergeLocal()
     Map* pCurrentMap = mpCurrentKF->GetMap();
     Map* pMergeMap = mpMergeMatchedKF->GetMap();
 
-    //std::cout << "Merge local, Active map: " << pCurrentMap->GetId() << std::endl;
-    //std::cout << "Merge local, Non-Active map: " << pMergeMap->GetId() << std::endl;
+    std::cout << "Merge local, Active map: " << pCurrentMap->GetId() << std::endl;
+    std::cout << "Merge local, Non-Active map: " << pMergeMap->GetId() << std::endl;
 
 #ifdef REGISTER_TIMES
     std::chrono::steady_clock::time_point time_StartMerge = std::chrono::steady_clock::now();

@@ -320,6 +320,7 @@ bool Map::GetIniertialBA2()
 
 void Map::ChangeId(long unsigned int nId)
 {
+    cout << "change map id from " << mnId << " to " << nId << endl; 
     mnId = nId;
 }
 

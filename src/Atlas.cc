@@ -27,13 +27,16 @@ namespace ORB_SLAM3
 {
 
 Atlas::Atlas(){
+    validMap = false;
     mpCurrentMap = static_cast<Map*>(NULL);
 }
 
 Atlas::Atlas(int initKFid): mnLastInitKFidMap(initKFid), mHasViewer(false)
 {
+    validMap = false;
     mpCurrentMap = static_cast<Map*>(NULL);
     CreateNewMap();
+    validMap = true;
 }
 
 Atlas::~Atlas()
@@ -71,6 +74,7 @@ void Atlas::CreateNewMap()
     }
     cout << "Creation of new map with last KF id: " << mnLastInitKFidMap << endl;
 
+    validMap = false;
     mpCurrentMap = new Map(mnLastInitKFidMap);
     mpCurrentMap->SetCurrentMap();
     mspMaps.insert(mpCurrentMap);
@@ -84,8 +88,10 @@ void Atlas::ChangeMap(Map* pMap)
         mpCurrentMap->SetStoredMap();
     }
 
+    validMap = false;
     mpCurrentMap = pMap;
     mpCurrentMap->SetCurrentMap();
+    cout << "Change to map with id: " << mpCurrentMap->GetId() << endl;
 }
 
 unsigned long int Atlas::GetLastInitKFid()
