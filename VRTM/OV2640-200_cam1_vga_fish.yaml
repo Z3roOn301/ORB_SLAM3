@@ -30,9 +30,9 @@ Camera1.k2: 0.02006377469608687
 Camera1.k3: -0.009454599124896974
 Camera1.k4: 0.0015601888923880917
 
+# Camera rotation fake due to axis in SLAM
 Camera.height: 480
 Camera.width: 640
-
 Camera.newHeight: 480
 Camera.newWidth: 640
 

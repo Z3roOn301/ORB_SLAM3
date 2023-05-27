@@ -12,14 +12,18 @@
 #include <WebSocketClientUtil.h>
 #include <WebSocketServerUtil.h>
 #include <thread>
-#include<execinfo.h>
+#include <execinfo.h>
+#include <cmath>
+#include <array>
+#include <Eigen/Core>
+#include <Eigen/Geometry>
 
 using namespace cv;
 using namespace std;
 
 bool b_continue_session;
-cv::Mat img;
-std::vector<WebSocketClientUtil::ImuData> imudata;
+std::vector<WebSocketClientUtil::ImuData> imudataLeft;
+std::vector<WebSocketClientUtil::ImuData> imudataRight;
 
 void exit_loop_handler(int s){
    cout << "Finishing session" << endl;
@@ -38,6 +42,28 @@ void handler(int sig) {
   backtrace_symbols_fd(array, size, STDERR_FILENO);
   exit(1);
 }
+
+void processImageStream(WebSocketClientUtil& socketClient, ORB_SLAM3::System& slam, std::vector<WebSocketClientUtil::ImuData>& imuData, string side, WebSocketServerUtil& server){
+    while (b_continue_session)
+    {
+        cv::Mat img;
+        while(socketClient.readImuData(imuData) == 0) {}
+        while (socketClient.readImg(img) == 0) {}        
+        
+        uint32_t timestamp = imuData[imuData.size()-1].timestamp;
+        Sophus::SE3f pose = slam.TrackMonocular(img, (double)timestamp);
+        
+        // Here a convertion to heading on shoe needs to happen
+        double AngleLX = pose.angleX();
+        double AngleLY = pose.angleY();
+        double AngleLZ = pose.angleZ();
+     
+        cout << side << ", Timestamp: " << timestamp << ", angle X: "<< AngleLX/M_PI*180.0 << ", Angle Y: "<<  AngleLY/M_PI*180.0 <<  ", Angle Z: "<< AngleLZ/M_PI*180.0 << ", Map Id: " << slam.mpAtlas->GetCurrentMap()->GetId() << ", valid" << slam.mpAtlas->validMap << endl;
+
+        server.send(side + ";" + std::to_string(timestamp)+ ";" +std::to_string(AngleLZ) + ";" + std::to_string(slam.mpAtlas->validMap));
+    }
+}
+
 
 int main(int argc, char **argv)
 {
@@ -74,8 +100,12 @@ int main(int argc, char **argv)
     sigaction(SIGINT, &sigIntHandler, NULL);
     b_continue_session = true;
 
-    //ESP32 URL
-    WebSocketClientUtil ws("192.168.4.11", "8000");
+    //ESP32 URL    
+    cout << "Connecting to clients" << endl;
+    WebSocketClientUtil webSocketClientLeft("192.168.4.11", "8000");
+    cout << "Client 1 connected" << endl;
+    WebSocketClientUtil webSocketClientRight("192.168.4.12", "8000");
+    cout << "Client 2 connected" << endl;
     WebSocketServerUtil ws_server(8080);
     std::thread t(&WebSocketServerUtil::run, &ws_server);
     namedWindow("Display window");
@@ -90,27 +120,16 @@ int main(int argc, char **argv)
     double t_resize = 0.f;
     double t_track = 0.f;
 
-    uint32_t timestampL = 0;
-    uint32_t timestampR = 0;
+    std::thread leftImageStreamProcessorThread(processImageStream, std::ref(webSocketClientLeft), std::ref(SlamL), std::ref(imudataLeft), "Left", std::ref(ws_server));
+    std::thread rightImageStreamProcessorThread(processImageStream, std::ref(webSocketClientRight), std::ref(SlamR), std::ref(imudataRight), "Right", std::ref(ws_server));
 
-    while (b_continue_session)
-        {
-        while (ws.readImuData(imudata) == 0) {}
-        while (ws.readImg(img) == 0) {}
-        timestampL = imudata[imudata.size()-1].timestamp;
-        timestampR = imudata[imudata.size()-1].timestamp; //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! RSO: This is a bug, timestampR should be the timestamp of the right camera
-        Sophus::SE3f PoseL = SlamL.TrackMonocular(img, (double)timestampL);
-        Sophus::SE3f PoseR = SlamR.TrackMonocular(img, (double)timestampR);
-        cout << "Timestamp: " <<timestampL << "    Angle X: "<< PoseL.angleX() << "   Angle Y: "<<  PoseL.angleY() <<  "   Angle Z: "<< PoseL.angleZ() <<  "    Map ID L: " << SlamL.mpAtlas->GetCurrentMap()->GetId() <<  "    Map ID R: " << SlamR.mpAtlas->GetCurrentMap()->GetId()<< endl << " L valid" << SlamL.mpAtlas->validMap << " R valid" << SlamR.mpAtlas->validMap << endl;
+    leftImageStreamProcessorThread.join();
+    rightImageStreamProcessorThread.join();
 
-        ws_server.send(std::to_string(timestampL)+ ";" + std::to_string(PoseL.angleX())+ ";"  + std::to_string(PoseL.angleY())+  ";" +std::to_string(PoseL.angleZ()) + ";" + std::to_string(SlamL.mpAtlas->validMap) + ";" +
-        std::to_string(timestampR)+ ";" +  std::to_string(PoseR.angleX()) +  ";" +std::to_string(PoseR.angleY())+ ";" + std::to_string(PoseR.angleZ()) + ";" + std::to_string(SlamR.mpAtlas->validMap));
-    }
-
-// Stop all threads
-SlamL.Shutdown();
-SlamR.Shutdown();
-t.join();
-return 0;
+    // Stop all threads
+    SlamL.Shutdown();
+    SlamR.Shutdown();
+    t.join();
+    return 0;
 
 }
